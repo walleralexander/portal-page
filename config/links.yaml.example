@@ -1,0 +1,72 @@
+# Portal Page Configuration
+# Copy this file to links.yaml and customize it
+#
+# Available icons (from Lucide): https://lucide.dev/icons
+# Built-in: home, cloud, image, globe, www, website, flag, search, calculator,
+#           code, help-circle, book, edit, terminal, message-square, play-circle,
+#           mail, calendar, file-text, clipboard, link, star, heart, settings,
+#           user, users, folder, download, upload, external-link, rss, database,
+#           server, shield, lock, unlock, key, bell, contact
+# Country flags: flag-at (Austria), flag-de (Germany), flag-ch (Switzerland), flag-eu (EU)
+# Austrian Bundeslaender: flag-wien, flag-noe, flag-ooe, flag-stmk, flag-ktn,
+#                         flag-sbg, flag-tirol, flag-vbg, flag-bgld
+#
+# RSS-Feed Categories:
+# A category can display an RSS feed instead of links:
+#   - name: "News"
+#     rss_feed: "https://example.com/feed.xml"
+#     rss_items: 5        # optional, default: 5
+#     rss_icon: "rss"     # optional, default: rss
+
+# Site name (displayed in browser tab and header)
+site_name: "My Portal"
+
+# Logo image URL (displayed in header, leave empty for no logo)
+logo: ""
+
+# Favicon URL (browser tab icon, leave empty for default)
+favicon: ""
+
+# Message displayed at the top of the page (leave empty to hide)
+message: ""
+
+# RSS Feed URL for sidebar (leave empty to disable)
+rss_feed: ""
+
+# Number of RSS items to display in sidebar
+rss_items: 5
+
+# Links organized by category
+categories:
+  - name: "Productivity"
+    links:
+      - title: "Gmail"
+        url: "https://mail.google.com"
+        icon: "mail"
+      - title: "Calendar"
+        url: "https://calendar.google.com"
+        icon: "calendar"
+      - title: "Drive"
+        url: "https://drive.google.com"
+        icon: "cloud"
+
+  - name: "Development"
+    links:
+      - title: "GitHub"
+        url: "https://github.com"
+        icon: "code"
+      - title: "Stack Overflow"
+        url: "https://stackoverflow.com"
+        icon: "help-circle"
+
+  - name: "News & Media"
+    links:
+      - title: "Hacker News"
+        url: "https://news.ycombinator.com"
+        icon: "terminal"
+      - title: "Reddit"
+        url: "https://www.reddit.com"
+        icon: "message-square"
+      - title: "YouTube"
+        url: "https://www.youtube.com"
+        icon: "play-circle"
