@@ -8,8 +8,8 @@ COPY styles.css /usr/share/nginx/html/
 # Create config directory (will be mounted as volume)
 RUN mkdir -p /data/config
 
-# Copy default config as fallback
-COPY config/links.yaml /data/config/links.yaml
+# Copy example config as fallback (user should mount their own links.yaml)
+COPY config/links.yaml.example /data/config/links.yaml
 
 # Copy nginx config
 COPY nginx.conf /etc/nginx/conf.d/default.conf
