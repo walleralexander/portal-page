@@ -4,7 +4,10 @@
       "Bash(python -m http.server:*)",
       "Bash(npx serve:*)",
       "Bash(git init:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(node -e:*)",
+      "Bash(python3:*)",
+      "Bash(docker ps:*)"
     ]
   }
 }

@@ -103,7 +103,25 @@ const icons = {
     'flag-bgld': '<svg viewBox="0 0 24 16"><rect width="24" height="8" fill="#ed2939"/><rect y="8" width="24" height="8" fill="#ffd735"/></svg>'
 };
 
+// Generate a three-color horizontal flag SVG
+// Format: couleur-color1-color2-color3 (e.g., couleur-red-white-gold)
+function generateColorFlag(colorString) {
+    const parts = colorString.split('-');
+    if (parts.length !== 4 || parts[0] !== 'couleur') {
+        return null;
+    }
+    const [, color1, color2, color3] = parts;
+    return `<svg viewBox="0 0 24 16"><rect width="24" height="5.33" fill="${color1}"/><rect y="5.33" width="24" height="5.33" fill="${color2}"/><rect y="10.66" width="24" height="5.34" fill="${color3}"/></svg>`;
+}
+
 function getIcon(iconName) {
+    // Check for dynamic color flag
+    if (iconName && iconName.startsWith('couleur-')) {
+        const colorFlag = generateColorFlag(iconName);
+        if (colorFlag) {
+            return colorFlag;
+        }
+    }
     return icons[iconName] || icons['link'];
 }
 
