@@ -120,6 +120,14 @@ volumes:
 
 Changes to `links.yaml` take effect on page refresh.
 
+### Rebuilding the Container
+
+Changes to `app.js`, `styles.css`, `index.html`, or other source files require rebuilding the Docker container:
+
+```bash
+docker-compose up -d --build
+```
+
 ## License
 
 MIT
