@@ -8,9 +8,3 @@ services:
       # Mount config directory - edit config/links.yaml to update the portal
       - ./config:/data/config:ro
     restart: unless-stopped
-    networks:
-      - dockernet
-networks:
-  dockernet:
-    external: true
-
