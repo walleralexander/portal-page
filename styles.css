@@ -188,7 +188,7 @@ body {
 
 .links-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    grid-template-columns: repeat(4, 1fr);
     gap: 10px;
 }
 
@@ -216,6 +216,11 @@ body {
     height: 20px;
     margin-right: 10px;
     opacity: 0.7;
+}
+
+.link-icon.couleur-icon {
+    width: 25px;
+    height: 17px;
 }
 
 .link-card:hover .link-icon {
@@ -325,7 +330,7 @@ body {
     }
 
     .links-grid {
-        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        grid-template-columns: repeat(3, 1fr);
     }
 }
 
@@ -349,7 +354,7 @@ body {
     }
 
     .links-grid {
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        grid-template-columns: repeat(2, 1fr);
         gap: 8px;
     }
 }

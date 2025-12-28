@@ -207,8 +207,9 @@ function createLinkCard(link) {
     linkCard.rel = 'noopener noreferrer';
 
     const iconSpan = document.createElement('span');
-    iconSpan.className = 'link-icon';
-    iconSpan.innerHTML = getIcon(link.icon || 'rss');
+    const iconName = link.icon || 'rss';
+    iconSpan.className = iconName.startsWith('couleur-') ? 'link-icon couleur-icon' : 'link-icon';
+    iconSpan.innerHTML = getIcon(iconName);
 
     const titleSpan = document.createElement('span');
     titleSpan.className = 'link-title';
