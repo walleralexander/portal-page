@@ -24,7 +24,7 @@ Open http://localhost:3000
 ### Docker
 
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 Open http://localhost
@@ -120,12 +120,20 @@ volumes:
 
 Changes to `links.yaml` take effect on page refresh.
 
+### Restarting the Container
+
+To restart the container after configuration changes:
+
+```bash
+docker compose up -d
+```
+
 ### Rebuilding the Container
 
 Changes to `app.js`, `styles.css`, `index.html`, or other source files require rebuilding the Docker container:
 
 ```bash
-docker-compose up -d --build
+docker compose up -d --build
 ```
 
 ## License
