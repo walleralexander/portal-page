@@ -7,7 +7,9 @@
       "Bash(git add:*)",
       "Bash(node -e:*)",
       "Bash(python3:*)",
-      "Bash(docker ps:*)"
+      "Bash(docker ps:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nAdd favicon directory support, logo icon, and configurable RSS proxy\n\n- Add favicon/ and img/ directories to Docker build\n- Support empty favicon config to use local favicon directory\n- Add \"logo\" icon type for links that displays site logo\n- Add configurable rss_proxy setting for self-hosted allorigins\n- Add webmanifest MIME type in nginx config\n- Increase site logo size to 64px\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git push)"
     ]
   }
 }
