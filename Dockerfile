@@ -4,6 +4,8 @@ FROM nginx:alpine
 COPY index.html /usr/share/nginx/html/
 COPY app.js /usr/share/nginx/html/
 COPY styles.css /usr/share/nginx/html/
+COPY favicon/ /usr/share/nginx/html/favicon/
+COPY img/ /usr/share/nginx/html/img/
 
 # Create config directory (will be mounted as volume)
 RUN mkdir -p /data/config

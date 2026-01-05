@@ -73,7 +73,7 @@ body {
 }
 
 .site-logo {
-    height: 32px;
+    height: 64px;
     width: auto;
     object-fit: contain;
 }
@@ -221,6 +221,23 @@ body {
 .link-icon.couleur-icon {
     width: 25px;
     height: 17px;
+}
+
+.link-icon.logo-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.link-icon.logo-icon img {
+    width: 30px;
+    height: 30px;
+    object-fit: cover;
+    border-radius: 4px;
+    background: #fff;
+    padding: 2px;
+    border: 2px solid #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
 }
 
 .link-card:hover .link-icon {
@@ -373,7 +390,7 @@ body {
     }
 
     .site-logo {
-        height: 24px;
+        height: 48px;
     }
 
     .message-banner {

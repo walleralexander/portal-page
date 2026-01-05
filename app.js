@@ -170,7 +170,7 @@ function renderMessage(message) {
 // Fetch RSS feed and return items
 async function fetchRSSItems(feedUrl, maxItems = 5) {
     try {
-        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(feedUrl)}`;
+        const proxyUrl = `${rssProxyUrl}${encodeURIComponent(feedUrl)}`;
         const response = await fetch(proxyUrl);
         const data = await response.json();
 
@@ -198,6 +198,13 @@ async function fetchRSSItems(feedUrl, maxItems = 5) {
     }
 }
 
+// Store logo URL globally for use in link cards
+let siteLogoUrl = '';
+
+// Store RSS proxy URL (configurable via links.yaml)
+const DEFAULT_RSS_PROXY = 'https://api.allorigins.win/get?url=';
+let rssProxyUrl = DEFAULT_RSS_PROXY;
+
 // Create a link card element
 function createLinkCard(link) {
     const linkCard = document.createElement('a');
@@ -208,8 +215,15 @@ function createLinkCard(link) {
 
     const iconSpan = document.createElement('span');
     const iconName = link.icon || 'rss';
-    iconSpan.className = iconName.startsWith('couleur-') ? 'link-icon couleur-icon' : 'link-icon';
-    iconSpan.innerHTML = getIcon(iconName);
+
+    // Handle special "logo" icon - use site logo image
+    if (iconName === 'logo' && siteLogoUrl) {
+        iconSpan.className = 'link-icon logo-icon';
+        iconSpan.innerHTML = `<img src="${siteLogoUrl}" alt="Logo">`;
+    } else {
+        iconSpan.className = iconName.startsWith('couleur-') ? 'link-icon couleur-icon' : 'link-icon';
+        iconSpan.innerHTML = getIcon(iconName);
+    }
 
     const titleSpan = document.createElement('span');
     titleSpan.className = 'link-title';
@@ -291,7 +305,7 @@ async function loadRSSFeed(feedUrl, maxItems = 5) {
 
     try {
         // Use a CORS proxy to fetch the RSS feed
-        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(feedUrl)}`;
+        const proxyUrl = `${rssProxyUrl}${encodeURIComponent(feedUrl)}`;
         const response = await fetch(proxyUrl);
         const data = await response.json();
 
@@ -382,12 +396,20 @@ function applySiteConfig(config) {
         logoEl.src = config.logo;
         logoEl.alt = siteName;
         logoEl.classList.remove('hidden');
+        // Store logo URL for use with "logo" icon in links
+        siteLogoUrl = config.logo;
     }
 
-    // Favicon
+    // Favicon - only override if custom favicon is specified in config
     if (config.favicon) {
         const faviconEl = document.getElementById('favicon');
         faviconEl.href = config.favicon;
+    }
+    // Otherwise, use default favicons from favicon/ directory (defined in HTML)
+
+    // RSS Proxy URL - configurable for self-hosted allorigins
+    if (config.rss_proxy) {
+        rssProxyUrl = config.rss_proxy;
     }
 }
 
