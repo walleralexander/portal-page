@@ -16,6 +16,8 @@ COPY offline.html /usr/share/nginx/html/
 
 # Copy plugin system + built-in plugins
 COPY plugins/ /usr/share/nginx/html/plugins/
+COPY favicon/ /usr/share/nginx/html/favicon/
+COPY img/ /usr/share/nginx/html/img/
 
 # Create config directory (will be mounted as volume)
 RUN mkdir -p /data/config

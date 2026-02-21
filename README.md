@@ -24,7 +24,7 @@ Open http://localhost:3000
 ### Docker
 
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 Open http://localhost
@@ -72,7 +72,44 @@ categories:
 ### Austrian Bundeslaender
 `flag-wien`, `flag-noe`, `flag-ooe`, `flag-stmk`, `flag-ktn`, `flag-sbg`, `flag-tirol`, `flag-vbg`, `flag-bgld`
 
+### Dynamic Color Flags
+Create custom three-stripe horizontal flags using the format `couleur-color1-color2-color3`:
+
+```yaml
+icon: "couleur-red-white-gold"    # Red, white, gold stripes
+icon: "couleur-black-red-yellow"  # German flag colors
+icon: "couleur-#003399-white-#ed2939"  # Blue, white, red (hex colors)
+```
+
+Colors can be CSS color names (red, white, gold, blue, etc.) or hex codes (#ff0000, #ffffff).
+
 ## Docker Configuration
+
+### Network Setup
+
+The container uses an external Docker network called `dockernet`. You need to create it manually before starting:
+
+```bash
+docker network create dockernet
+```
+
+Alternatively, modify `docker-compose.yml` to use a local network:
+
+```yaml
+networks:
+  dockernet:
+    external: true
+```
+
+Change to:
+
+```yaml
+networks:
+  dockernet:
+    driver: bridge
+```
+
+### Volumes
 
 The `config/` directory is mounted as a volume, allowing you to edit `links.yaml` without rebuilding the container:
 
@@ -82,6 +119,22 @@ volumes:
 ```
 
 Changes to `links.yaml` take effect on page refresh.
+
+### Restarting the Container
+
+To restart the container after configuration changes:
+
+```bash
+docker compose up -d
+```
+
+### Rebuilding the Container
+
+Changes to `app.js`, `styles.css`, `index.html`, or other source files require rebuilding the Docker container:
+
+```bash
+docker compose up -d --build
+```
 
 ## License
 

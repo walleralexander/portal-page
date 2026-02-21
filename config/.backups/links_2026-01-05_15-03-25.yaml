@@ -1,0 +1,242 @@
+# Portal Page Configuration
+# Edit this file to customize your portal
+#
+# Available icons (from Lucide): https://lucide.dev/icons
+# Built-in: home, cloud, image, globe, www, website, flag, search, calculator,
+#           code, help-circle, book, edit, terminal, message-square, play-circle,
+#           mail, calendar, file-text, clipboard, link, star, heart, settings,
+#           user, users, folder, download, upload, external-link, rss, database,
+#           server, shield, lock, unlock, key, bell, contact
+# Country flags: flag-at (Austria), flag-de (Germany), flag-ch (Switzerland), flag-eu (EU)
+# Austrian Bundesländer: flag-wien, flag-noe, flag-ooe, flag-stmk, flag-ktn,
+#                        flag-sbg, flag-tirol, flag-vbg, flag-bgld
+#
+# RSS-Feed Kategorien:
+# Eine Kategorie kann statt "links" auch einen RSS-Feed anzeigen:
+#   - name: "Artikel"
+#     rss_feed: "https://example.com/feed.xml"
+#     rss_items: 5        # optional, default: 5
+#     rss_icon: "rss"     # optional, default: rss
+
+# Site name (displayed in browser tab and header)
+site_name: "VMCV Portal"
+
+# Logo image URL (displayed in header, leave empty for no logo)
+logo: "https://www.vmcv.at/wp-content/uploads/2023/10/VMCV-Logo_2023_100x100.webp"
+
+# Favicon URL (browser tab icon, leave empty for default)
+favicon: "https://www.vmcv.at/wp-content/uploads/2023/10/cropped-android-chrome-512x512-1-192x192.webp"
+
+# Message displayed at the top of the page
+message: "Wir wünschen ein en guten Rutsch ins Jahr 2026!"
+
+# RSS Feed URL (leave empty to disable)
+rss_feed: "https://news.server.vmcv.at/rss/"
+#"https://www.vmcv.at/news/rss2/"
+#"https://www.tagesschau.de/xml/rss2/"
+
+# Number of RSS items to display
+rss_items: 5
+
+# Links - up to 20 links organized by category
+categories:
+  - name: "VMCV"
+    links:
+      - title: "WebSite"
+        url: "https://www.vmcv.at"
+        icon: "flag-vbg"
+      - title: "Cloud"
+        url: "https://cloud.vmcv.at"
+        icon: "cloud"
+      - title: "VMCV-App"
+        url: "https://cal.vmcv.at"
+        icon: "cloud"
+      - title: "Bilder"
+        url: "https://bilder.vmcv.at"
+        icon: "image"
+      - title: "Siegbergball"
+        url: "https://siegbergball-2026.lovable.app/"
+        icon: "cloud"
+
+  - name: "VMCV Verbindungen"
+    links:
+      - title: "StV Augia Brigantina Bregenz"
+        url: "https://www.augia.at"
+        icon: "couleur-red-silver-green"
+      - title: "StV Bregancea Bregenz"
+        url: "https://www.bregancea.at"
+        icon: "couleur-black-blue-white"
+      - title: "KMV Clunia Feldkirch"
+        url: "https://www.clunia.at"
+        icon: "couleur-red-white-gold"
+      - title: "KMV Kustersberg Bregenz"
+        url: "https://www.kustersberg.at"
+        icon: "couleur-black-red-green"
+      - title: "KÖStV Rhenania Lustenau"
+        url: "https://www.rhenania-lustenau.at"
+        icon: "couleur-green-gold-white"
+      - title: "KMV Siegberg Dornbirn"
+        url: "https://www.siegberg.org"
+        icon: "couleur-green-white-red"
+      - title: "KMV Sonnenberg Bludenz"
+        url: "http://www.topsob.at"
+        icon: "couleur-darkblue-gold-red"
+      - title: "KöStV Wellenstein Bregenz"
+        url: "https://www.wellenstein.at"
+        icon: "couleur-gold-white-blue"
+
+  - name: "MKV und Landesverbände"
+    links:
+      - title: "MKV"
+        url: "https://www.mkv.at"
+        icon: "flag-at"
+      - title: "MKV OGV"
+        url: "https://ogv.mkv.at"
+        icon: "contact"
+      - title: "BMV"
+        url: "https://www.bmv-mkv.at"
+        icon: "flag-bgld"
+      - title: "LVK"
+        url: "https://www.lvk.at"
+        icon: "flag-ktn"
+      - title: "NÖMKV"
+        url: "https://www.noemkv.at"
+        icon: "flag-noe"
+      - title: "OÖMKV"
+        url: "https://www.ooemkv.at"
+        icon: "flag-ooe"
+      - title: "SLV"
+        url: "https://www.slv-mkv.at"
+        icon: "flag-sbg"
+      - title: "STMV"
+        url: "https://www.stmv.at"
+        icon: "flag-stmk"
+      - title: "TMV"
+        url: "https://www.tmv.or.at"
+        icon: "flag-tirol"
+      - title: "WSTV"
+        url: "https://www.wstv.net"
+        icon: "flag-wien"
+
+  - name: "Andere Verbände"
+    links:
+      - title: "VfM"
+        url: "https://www.vfm-info.at/"
+        icon: "flag-at"
+      - title: "ÖCV"
+        url: "https://www.oecv.at"
+        icon: "flag-at"
+      - title: "VCS"
+        url: "https://www.vcs.at/"
+        icon: "flag-at"
+      - title: "KAV"
+        url: "http://www.kartellverband.org/"
+        icon: "flag-at"
+      - title: "AKV"
+        url: "https://www.akv.or.at/"
+        icon: "flag-at"
+      - title: "ICV"
+        url: "https://www.innsbrucker-cv.tirol/"
+        icon: "flag-at"
+      - title: "SchwStV"
+        url: "https://www.schw-stv.ch"
+        icon: "flag-ch"
+      - title: "EKV"
+        url: "https://www.ekv.info"
+        icon: "flag-eu"
+
+  - name: "Andere Verbindungen"
+    links:
+        - title: "Augo Nibelungia"
+          url: "https://www.augo-nibelungia.at/"
+          icon: "couleur-blue-white-gold"
+        - title: "KÖStV Bernardia Stams"
+          url: "https://www.bernardia.at/"
+          icon: "couleur-red-blue-silver"
+        - title: "KMV Waldmark Horn"
+          url: "https://www.waldmark.at/"
+          icon: "couleur-black-green-gold"
+
+  - name: "Instagram und so"
+    links:
+        - title: "VMCV Instagram"
+          url: "https://www.instagram.com/vmcv_vlv/"
+          icon: "instagram"
+        - title: "MKV Instagram"
+          url: "https://www.instagram.com/mkvbringts/"
+          icon: "instagram"
+        - title: "Clunia"
+          url: "https://www.instagram.com/kmv_clunia/"
+          icon: "instagram"
+        - title: "Kustersberg"
+          url: "https://www.instagram.com/kmv_kustersberg/"
+          icon: "instagram"
+        - title: "Wellenstein Instagram"
+          url: "https://www.instagram.com/wellenstein_bregenz/"
+          icon: "instagram"
+        - title: "VMCV Facebook"
+          url: "https://www.facebook.com/vmcv.vlv"
+          icon: "facebook"
+        - title: "AA Augo Nibelungia Facebook"
+          url: "https://www.facebook.com/p/AA-Augo-Nibelungia-Bregenz-Mehrerau-100063518259942/"
+          icon: "facebook"
+        - title: "Waldmark Horn Instagram"
+          url: https://www.instagram.com/waldmark.horn/
+          icon: instagram
+          # https://www.facebook.com/WaldmarkHorn/
+          
+          
+        #- title: "MKV Facebook"
+        #  url: "https://www.facebook.com/mkv.at"
+        #  icon: "facebook"
+        #- title: "Clunia"
+        #  url: "https://www.facebook.com/clunia.aktivitas"
+        #  icon: "facebook"
+        #- title: "Kustersberg"
+        #  url: "https://www.facebook.com/kustersberg.aktivitas"
+        #  icon: "facebook"
+        #- title: "Wellenstein"
+        #  url: "https://www.facebook.com/wellenstein.bregenz"
+        #  icon: "facebook"
+        - title: "ICV Instagram"
+          url: "https://www.instagram.com/innsbrucker.cartellverband/"
+          icon: "flag-at"
+        - title: "ICV Youtube"
+          url: https://www.youtube.com/@InnsbruckerCartellverband
+        - title: "KAV facebook"
+          url: https://www.facebook.com/oesterreichischer.kartellverband
+        - title: "youtube"
+          url: https://www.youtube.com
+          icon: youtube
+          
+  - name: "Admin"
+    links:
+        - title: "Portal-Admin"
+          url: "https://yaml.server.vmcv.at/"
+          icon: "intern"
+  
+          
+
+# Additional categories can be added below as neede
+#  - name: "Search Engines"
+ 
+#  - name: "Productivity"
+#    links:
+#      - title: "Gmail"
+#        url: "https://mail.google.com"
+#        icon: "mail"
+#      - title: "Google Calendar"
+#        url: "https://calendar.google.com"
+#        icon: "calendar"
+
+#  - name: "News & Media"
+#    links:
+#      - title: "Hacker News"
+#        url: "https://news.ycombinator.com"
+#        icon: "terminal"
+#      - title: "Reddit"
+#        url: "https://www.reddit.com"
+#        icon: "message-square"
+#      - title: "YouTube"
+#        url: "https://www.youtube.com"
+#        icon: "play-circle"
