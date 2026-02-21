@@ -1,5 +1,11 @@
-# Portal Page Configuration
+# Enhanced Portal Page Configuration
 # Edit this file to customize your portal
+# 
+# 🎯 New Features:
+# - Use Ctrl+K to search through all links
+# - Use Ctrl+D to toggle dark/light mode
+# - Use Ctrl+R to refresh the page
+# - Use Escape to clear search
 #
 # Available icons (from Lucide): https://lucide.dev/icons
 # Built-in: home, cloud, image, globe, www, website, flag, search, calculator,
@@ -28,7 +34,45 @@ logo: "https://www.vmcv.at/wp-content/uploads/2023/10/VMCV-Logo_2023_100x100.web
 favicon: "https://www.vmcv.at/wp-content/uploads/2023/10/cropped-android-chrome-512x512-1-192x192.webp"
 
 # Message displayed at the top of the page
-message: "Fröhliche Weihnachten und ein gesegnetes neues Jahr 2026!"
+message: "Fröhliche Weihnachten und ein gesegnetes neues Jahr 2026! 🔍 Nutze Ctrl+K zum Suchen, Ctrl+D für Dark Mode."
+
+# Performance & Features (Phase 2 Enhanced Edition)
+request_timeout: 10        # Network request timeout in seconds
+max_retries: 3             # Maximum retry attempts for failed requests
+
+# Caching Configuration
+# Set cache.enabled to false to disable ALL caching (useful for development).
+# Or toggle individual caches while keeping the master switch on.
+cache:
+  enabled: true            # Master switch – false turns off ALL caching
+  rss_enabled: true        # Cache RSS feed results
+  rss_duration: 300        # RSS cache TTL in seconds (0 = no cache)
+  config_enabled: true     # Cache the YAML config itself
+  config_duration: 60      # Config cache TTL in seconds
+
+# Enhanced Features
+features:
+  search_enabled: true      # Enable search functionality
+  keyboard_shortcuts: true  # Enable keyboard shortcuts
+  analytics_enabled: true   # Privacy-friendly analytics (localStorage only, no server)
+
+# Plugins (optional modules, loaded on demand)
+# Available: themes
+# Future: multi-user (requires backend), api (requires backend)
+plugins:
+  - themes
+
+# Theme configuration (requires themes plugin)
+# Built-in themes: default, ocean, forest, sunset, lavender, rose,
+#                  slate, nord, dracula, solarized, midnight
+# Users can also pick a theme via the 🎨 button in the header.
+theme:
+  name: "default"
+  # custom:             # Optional color overrides (apply on top of chosen theme)
+  #   primary: "#1a1a2e"
+  #   accent: "#2b6cb0"
+  #   background: "#f7f8fa"
+  #   dark_background: "#0f1419"
 
 # RSS Feed URL (leave empty to disable)
 rss_feed: "https://www.vmcv.at/news/rss2/"
@@ -36,6 +80,7 @@ rss_feed: "https://www.vmcv.at/news/rss2/"
 
 # Number of RSS items to display
 rss_items: 5
+rss_refresh_interval: 300  # Auto-refresh interval in seconds
 
 # Links - up to 20 links organized by category
 categories:

@@ -1,0 +1,376 @@
+/* =============================================================================
+   Portal Page – Admin Panel CSS (Phase 3)
+   ============================================================================= */
+
+/* ---- Admin toggle button in header ---------------------------------------- */
+.admin-toggle-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    background: var(--card-background);
+    color: var(--text-color);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    box-shadow: var(--shadow);
+}
+
+.admin-toggle-btn:hover {
+    background: var(--background-color);
+    border-color: var(--text-light);
+    color: var(--hover-color);
+}
+
+/* ---- Slide-out panel ------------------------------------------------------- */
+.admin-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: min(480px, 92vw);
+    background: var(--card-background);
+    border-left: 1px solid var(--border-color);
+    box-shadow: -4px 0 24px rgba(0, 0, 0, 0.15);
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    animation: slideIn 0.25s ease-out;
+    overflow: hidden;
+}
+
+@keyframes slideIn {
+    from { transform: translateX(100%); }
+    to   { transform: translateX(0);    }
+}
+
+body.admin-open::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 9999;
+}
+
+/* ---- Header ---------------------------------------------------------------- */
+.admin-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border-color);
+    flex-shrink: 0;
+}
+
+.admin-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.admin-close {
+    background: none;
+    border: none;
+    font-size: 1.6rem;
+    color: var(--text-light);
+    cursor: pointer;
+    padding: 0 4px;
+    line-height: 1;
+}
+
+.admin-close:hover {
+    color: var(--text-color);
+}
+
+/* ---- Tabs ------------------------------------------------------------------ */
+.admin-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border-color);
+    padding: 0 12px;
+    flex-shrink: 0;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.admin-tab-btn {
+    padding: 10px 14px;
+    border: none;
+    background: none;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-light);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    transition: all 0.15s;
+}
+
+.admin-tab-btn:hover {
+    color: var(--text-color);
+}
+
+.admin-tab-btn.active {
+    color: var(--hover-color);
+    border-bottom-color: var(--hover-color);
+}
+
+/* ---- Body ------------------------------------------------------------------ */
+.admin-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 20px;
+}
+
+.admin-tab-content.hidden {
+    display: none;
+}
+
+.admin-section {
+    margin-bottom: 24px;
+}
+
+.admin-section h3 {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: var(--text-light);
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.admin-empty {
+    text-align: center;
+    padding: 32px 16px;
+    color: var(--text-light);
+}
+
+.admin-empty p {
+    margin-bottom: 8px;
+}
+
+.admin-hint {
+    font-size: 0.82rem;
+    color: var(--text-light);
+    opacity: 0.8;
+}
+
+.admin-hint code {
+    background: var(--background-color);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+}
+
+/* ---- Stat grid ------------------------------------------------------------- */
+.admin-stat-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.admin-stat {
+    background: var(--background-color);
+    border-radius: 8px;
+    padding: 12px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.admin-stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+.admin-stat-label {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    color: var(--text-light);
+    font-weight: 600;
+}
+
+/* ---- Mini bar chart -------------------------------------------------------- */
+.admin-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 6px;
+    height: 80px;
+    margin-top: 12px;
+    padding: 0 4px;
+}
+
+.admin-bar-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    justify-content: flex-end;
+}
+
+.admin-bar {
+    width: 100%;
+    min-height: 4px;
+    background: var(--hover-color);
+    border-radius: 3px 3px 0 0;
+    transition: height 0.3s ease;
+}
+
+.admin-bar-label {
+    font-size: 0.65rem;
+    color: var(--text-light);
+    margin-top: 4px;
+}
+
+/* ---- Table ----------------------------------------------------------------- */
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+}
+
+.admin-table th {
+    text-align: left;
+    color: var(--text-light);
+    font-weight: 600;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    padding: 6px 8px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.admin-table td {
+    padding: 8px;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-color);
+}
+
+.admin-table tr:last-child td {
+    border-bottom: none;
+}
+
+/* ---- Badges ---------------------------------------------------------------- */
+.admin-badge-ok {
+    display: inline-block;
+    background: #c6f6d5;
+    color: #22543d;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.admin-badge-err {
+    display: inline-block;
+    background: #fed7d7;
+    color: #9b2c2c;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.admin-badge-warn {
+    display: inline-block;
+    background: #fefcbf;
+    color: #744210;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+[data-theme="dark"] .admin-badge-ok  { background: #22543d; color: #c6f6d5; }
+[data-theme="dark"] .admin-badge-err { background: #742a2a; color: #fed7d7; }
+[data-theme="dark"] .admin-badge-warn { background: #744210; color: #fefcbf; }
+
+/* ---- Tags ------------------------------------------------------------------ */
+.admin-tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.admin-tag {
+    background: var(--background-color);
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    color: var(--text-color);
+}
+
+.admin-tag small {
+    color: var(--text-light);
+}
+
+/* ---- Config viewer --------------------------------------------------------- */
+.admin-config-pre {
+    background: var(--background-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 14px;
+    font-size: 0.78rem;
+    font-family: 'Consolas', 'Monaco', monospace;
+    overflow-x: auto;
+    max-height: 320px;
+    overflow-y: auto;
+    line-height: 1.5;
+    color: var(--text-color);
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+/* ---- Buttons --------------------------------------------------------------- */
+.admin-btn {
+    padding: 8px 16px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    background: var(--background-color);
+    color: var(--text-color);
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.admin-btn:hover {
+    border-color: var(--hover-color);
+    color: var(--hover-color);
+}
+
+.admin-btn-danger {
+    border-color: #e53e3e;
+    color: #e53e3e;
+}
+
+.admin-btn-danger:hover {
+    background: #e53e3e;
+    color: #fff;
+}
+
+.admin-btn-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+/* ---- Responsive ------------------------------------------------------------ */
+@media (max-width: 480px) {
+    .admin-panel {
+        width: 100vw;
+    }
+    .admin-tab-btn {
+        padding: 8px 10px;
+        font-size: 0.75rem;
+    }
+    .admin-stat-value {
+        font-size: 1.2rem;
+    }
+}

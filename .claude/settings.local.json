@@ -4,7 +4,8 @@
       "Bash(python -m http.server:*)",
       "Bash(npx serve:*)",
       "Bash(git init:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(FILTER_BRANCH_SQUELCH_WARNING=1 git -C \"c:\\\\Entwicklung\\\\PortalPage\" filter-branch --force --index-filter \"git rm --cached --ignore-unmatch config/links.yaml\" --prune-empty HEAD)"
     ]
   }
 }

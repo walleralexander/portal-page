@@ -4,6 +4,18 @@ FROM nginx:alpine
 COPY index.html /usr/share/nginx/html/
 COPY app.js /usr/share/nginx/html/
 COPY styles.css /usr/share/nginx/html/
+COPY enhancements.css /usr/share/nginx/html/
+COPY admin.css /usr/share/nginx/html/
+COPY keyboard-shortcuts.js /usr/share/nginx/html/
+COPY search-feature.js /usr/share/nginx/html/
+COPY analytics.js /usr/share/nginx/html/
+COPY admin.js /usr/share/nginx/html/
+COPY manifest.json /usr/share/nginx/html/
+COPY service-worker.js /usr/share/nginx/html/
+COPY offline.html /usr/share/nginx/html/
+
+# Copy plugin system + built-in plugins
+COPY plugins/ /usr/share/nginx/html/plugins/
 
 # Create config directory (will be mounted as volume)
 RUN mkdir -p /data/config

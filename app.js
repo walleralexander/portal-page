@@ -1,4 +1,243 @@
-// Dark mode toggle
+// =============================================================================
+// Portal Page - Enhanced Edition (Phase 2)
+// =============================================================================
+
+// ---- Global State -----------------------------------------------------------
+let globalConfig = null;
+let rssAutoRefreshTimer = null;
+const rssHealthStatus = {};       // { url: { ok, fails, lastLoad, avgMs } }
+
+// ---- Cache Manager ----------------------------------------------------------
+// Granular cache that can be disabled fully or per-type via config.
+//
+// links.yaml cache section:
+//   cache:
+//     enabled: true          # master switch – false turns off ALL caching
+//     rss_enabled: true      # RSS feed result caching
+//     rss_duration: 300      # seconds
+//     config_enabled: true   # YAML config caching
+//     config_duration: 60    # seconds
+//
+// For development set cache.enabled: false to always fetch fresh data.
+// Or disable only rss caching with cache.rss_enabled: false while keeping
+// other caches active.
+
+const CacheManager = {
+    _resolveEnabled(type) {
+        const c = globalConfig?.cache;
+        if (!c || c.enabled === false) return false;
+        if (type && c[`${type}_enabled`] === false) return false;
+        return true;
+    },
+
+    _ttl(type) {
+        const c = globalConfig?.cache;
+        const key = `${type}_duration`;
+        return ((c && c[key]) || 300) * 1000;
+    },
+
+    get(key, type) {
+        if (!this._resolveEnabled(type)) {
+            console.log(`[Cache] SKIP read (${type} caching disabled): ${key}`);
+            return null;
+        }
+        try {
+            const raw = localStorage.getItem(key);
+            if (!raw) return null;
+            const entry = JSON.parse(raw);
+            const age = Date.now() - entry.timestamp;
+            if (age > this._ttl(type)) {
+                console.log(`[Cache] EXPIRED (${(age/1000).toFixed(0)}s > ${(this._ttl(type)/1000)}s): ${key}`);
+                return null;
+            }
+            console.log(`[Cache] HIT (${(age/1000).toFixed(0)}s old): ${key}`);
+            return entry.data;
+        } catch (e) {
+            console.warn('[Cache] Read error:', e);
+            return null;
+        }
+    },
+
+    set(key, data, type) {
+        if (!this._resolveEnabled(type)) {
+            console.log(`[Cache] SKIP write (${type} caching disabled): ${key}`);
+            return;
+        }
+        try {
+            localStorage.setItem(key, JSON.stringify({ data, timestamp: Date.now() }));
+            console.log(`[Cache] STORED: ${key}`);
+        } catch (e) {
+            console.warn('[Cache] Write error:', e);
+        }
+    },
+
+    /** Return stale data regardless of TTL (used as fallback on network error) */
+    getStale(key) {
+        try {
+            const raw = localStorage.getItem(key);
+            if (!raw) return null;
+            return JSON.parse(raw).data;
+        } catch { return null; }
+    },
+
+    clear(pattern) {
+        const keys = [];
+        for (let i = 0; i < localStorage.length; i++) {
+            const k = localStorage.key(i);
+            if (!pattern || k.startsWith(pattern)) keys.push(k);
+        }
+        keys.forEach(k => localStorage.removeItem(k));
+        console.log(`[Cache] Cleared ${keys.length} entries${pattern ? ` matching "${pattern}"` : ''}`);
+    },
+
+    /** Human-readable summary for dev mode badge */
+    summary() {
+        const c = globalConfig?.cache;
+        if (!c || c.enabled === false) return 'ALL CACHING DISABLED';
+        const parts = [];
+        if (c.rss_enabled === false) parts.push('rss:off');
+        else parts.push(`rss:${c.rss_duration || 300}s`);
+        if (c.config_enabled === false) parts.push('config:off');
+        else parts.push(`config:${c.config_duration || 60}s`);
+        return parts.join(' | ');
+    }
+};
+
+// ---- Rate Limiter -----------------------------------------------------------
+const RateLimiter = {
+    _requests: {},
+
+    isAllowed(key, max, windowSec) {
+        const now = Date.now();
+        const windowMs = windowSec * 1000;
+        if (!this._requests[key]) this._requests[key] = [];
+        this._requests[key] = this._requests[key].filter(t => t > now - windowMs);
+        if (this._requests[key].length >= max) {
+            console.warn(`[RateLimit] Blocked: ${key} (${max}/${windowSec}s)`);
+            return false;
+        }
+        this._requests[key].push(now);
+        return true;
+    }
+};
+
+// ---- Config Validator -------------------------------------------------------
+const ConfigValidator = {
+    validate(config) {
+        const errors = [];
+        const warnings = [];
+
+        if (!config) { errors.push('Config is empty'); return { ok: false, errors, warnings }; }
+        if (!config.categories || !Array.isArray(config.categories)) {
+            errors.push('Missing or invalid "categories" array');
+        } else {
+            config.categories.forEach((cat, i) => {
+                if (!cat.name) errors.push(`Category #${i + 1}: missing "name"`);
+                if (!cat.links && !cat.rss_feed) warnings.push(`Category "${cat.name || i + 1}": no links or rss_feed`);
+                if (cat.rss_feed && !isValidURL(cat.rss_feed)) errors.push(`Category "${cat.name}": invalid rss_feed URL`);
+                cat.links?.forEach((link, j) => {
+                    if (!link.url) errors.push(`Category "${cat.name}" link #${j + 1}: missing URL`);
+                    if (!link.title) warnings.push(`Category "${cat.name}" link #${j + 1}: missing title`);
+                });
+            });
+        }
+        if (config.rss_feed && !isValidURL(config.rss_feed)) {
+            errors.push('Invalid main rss_feed URL');
+        }
+        return { ok: errors.length === 0, errors, warnings };
+    }
+};
+
+function isValidURL(str) {
+    try { new URL(str); return true; } catch { return false; }
+}
+
+// ---- Toast / Notification System --------------------------------------------
+// Supports stacking and action buttons.  Types: info, success, error, warning
+const Toast = {
+    _container: null,
+
+    _ensureContainer() {
+        if (this._container) return;
+        this._container = document.createElement('div');
+        this._container.className = 'toast-container';
+        document.body.appendChild(this._container);
+    },
+
+    show(message, type = 'info', duration = 3000, actions) {
+        this._ensureContainer();
+
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+
+        const msgSpan = document.createElement('span');
+        msgSpan.className = 'toast-message';
+        msgSpan.textContent = message;
+        toast.appendChild(msgSpan);
+
+        if (actions && actions.length) {
+            const actionsDiv = document.createElement('div');
+            actionsDiv.className = 'toast-actions';
+            actions.forEach(({ label, onClick }) => {
+                const btn = document.createElement('button');
+                btn.className = 'toast-action-btn';
+                btn.textContent = label;
+                btn.onclick = () => { onClick(); this._dismiss(toast); };
+                actionsDiv.appendChild(btn);
+            });
+            toast.appendChild(actionsDiv);
+        }
+
+        // Dismiss button
+        const close = document.createElement('button');
+        close.className = 'toast-close';
+        close.innerHTML = '&times;';
+        close.onclick = () => this._dismiss(toast);
+        toast.appendChild(close);
+
+        this._container.appendChild(toast);
+        requestAnimationFrame(() => toast.classList.add('show'));
+
+        if (duration > 0) {
+            setTimeout(() => this._dismiss(toast), duration);
+        }
+        return toast;
+    },
+
+    _dismiss(toast) {
+        toast.classList.remove('show');
+        toast.classList.add('hide');
+        setTimeout(() => { if (toast.parentNode) toast.remove(); }, 300);
+    }
+};
+
+// Keep backward compat with Phase 1 callers
+function showStatus(message, type = 'info', duration = 3000) {
+    Toast.show(message, type, duration);
+}
+
+// ---- Dev Mode Badge ---------------------------------------------------------
+function renderDevBadge() {
+    const c = globalConfig?.cache;
+    const isDev = c && c.enabled === false;
+    const hasPartialOff = c && c.enabled !== false && (c.rss_enabled === false || c.config_enabled === false);
+
+    // Remove old badge
+    document.getElementById('dev-badge')?.remove();
+
+    if (!isDev && !hasPartialOff) return;
+
+    const badge = document.createElement('div');
+    badge.id = 'dev-badge';
+    badge.className = isDev ? 'dev-badge dev-badge-full' : 'dev-badge dev-badge-partial';
+    badge.title = CacheManager.summary();
+    badge.innerHTML = isDev
+        ? '🛠 DEV – Cache OFF'
+        : `🛠 DEV – ${CacheManager.summary()}`;
+    document.body.appendChild(badge);
+}
+
+// ---- Dark Mode Toggle -------------------------------------------------------
 function initTheme() {
     const toggle = document.getElementById('theme-toggle');
     const savedTheme = localStorage.getItem('theme');
@@ -19,19 +258,14 @@ function initTheme() {
     });
 }
 
-// Date and time display
+// ---- Date / Time Display ----------------------------------------------------
 function updateDateTime() {
     const el = document.getElementById('datetime');
     const now = new Date();
-    const options = {
-        weekday: 'long',
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-    };
-    el.textContent = now.toLocaleDateString('de-DE', options);
+    el.textContent = now.toLocaleDateString('de-DE', {
+        weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
+        hour: '2-digit', minute: '2-digit'
+    });
 }
 
 function initDateTime() {
@@ -39,13 +273,7 @@ function initDateTime() {
     setInterval(updateDateTime, 1000);
 }
 
-// Icon SVGs from Lucide (https://lucide.dev/icons)
-// Available icons: home, cloud, image, globe/www/website, flag, search, calculator, code,
-// help-circle, book, edit, terminal, message-square, play-circle, mail, calendar,
-// file-text, clipboard, link, star, heart, settings, user, users, folder, download,
-// upload, external-link, rss, database, server, shield, lock, unlock, key, bell, contact
-// Country/Region flags: flag-at, flag-de, flag-eu, flag-wien, flag-noe, flag-ooe,
-// flag-stmk, flag-ktn, flag-sbg, flag-tirol, flag-vbg, flag-bgld
+// ---- Icon Map (unchanged from Phase 1) --------------------------------------
 const icons = {
     'home': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>',
     'cloud': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg>',
@@ -86,12 +314,10 @@ const icons = {
     'key': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15.5 7.5 2.3 2.3a1 1 0 0 0 1.4 0l2.1-2.1a1 1 0 0 0 0-1.4L19 4"/><path d="m21 2-9.6 9.6"/><circle cx="7.5" cy="15.5" r="5.5"/></svg>',
     'bell': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>',
     'contact': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 18a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2"/><rect width="18" height="18" x="3" y="4" rx="2"/><circle cx="12" cy="10" r="2"/><line x1="8" x2="8" y1="2" y2="4"/><line x1="16" x2="16" y1="2" y2="4"/></svg>',
-    // Country and region flags
     'flag-at': '<svg viewBox="0 0 24 16"><rect width="24" height="16" fill="#ed2939"/><rect y="5.33" width="24" height="5.33" fill="#fff"/></svg>',
     'flag-de': '<svg viewBox="0 0 24 16"><rect width="24" height="5.33" fill="#000"/><rect y="5.33" width="24" height="5.33" fill="#dd0000"/><rect y="10.66" width="24" height="5.34" fill="#ffcc00"/></svg>',
     'flag-eu': '<svg viewBox="0 0 24 16"><rect width="24" height="16" fill="#003399"/><g fill="#ffcc00"><circle cx="12" cy="3" r="1"/><circle cx="12" cy="13" r="1"/><circle cx="7.1" cy="4.5" r="1"/><circle cx="16.9" cy="4.5" r="1"/><circle cx="7.1" cy="11.5" r="1"/><circle cx="16.9" cy="11.5" r="1"/><circle cx="4.5" cy="8" r="1"/><circle cx="19.5" cy="8" r="1"/><circle cx="5.5" cy="5.5" r="1"/><circle cx="18.5" cy="5.5" r="1"/><circle cx="5.5" cy="10.5" r="1"/><circle cx="18.5" cy="10.5" r="1"/></g></svg>',
     'flag-ch': '<svg viewBox="0 0 24 16"><rect width="24" height="16" fill="#ff0000"/><rect x="10" y="3" width="4" height="10" fill="#fff"/><rect x="7" y="6" width="10" height="4" fill="#fff"/></svg>',
-    // Austrian Bundesländer
     'flag-wien': '<svg viewBox="0 0 24 16"><rect width="24" height="8" fill="#ed2939"/><rect y="8" width="24" height="8" fill="#fff"/></svg>',
     'flag-noe': '<svg viewBox="0 0 24 16"><rect width="24" height="8" fill="#1e4785"/><rect y="8" width="24" height="8" fill="#ffd735"/></svg>',
     'flag-ooe': '<svg viewBox="0 0 24 16"><rect width="24" height="8" fill="#fff"/><rect y="8" width="24" height="8" fill="#ed2939"/></svg>',
@@ -103,27 +329,186 @@ const icons = {
     'flag-bgld': '<svg viewBox="0 0 24 16"><rect width="24" height="8" fill="#ed2939"/><rect y="8" width="24" height="8" fill="#ffd735"/></svg>'
 };
 
-function getIcon(iconName) {
-    return icons[iconName] || icons['link'];
-}
+function getIcon(name) { return icons[name] || icons['link']; }
 
-// Load and parse YAML configuration
+// ---- Config Loader ----------------------------------------------------------
 async function loadConfig() {
+    // Try config cache first
+    const cached = CacheManager.get('portal_config', 'config');
+    if (cached) {
+        globalConfig = applyConfigDefaults(cached);
+        return globalConfig;
+    }
+
     try {
         const response = await fetch('links.yaml');
         const yamlText = await response.text();
-        return jsyaml.load(yamlText);
+        const config = jsyaml.load(yamlText);
+
+        const final = applyConfigDefaults(config);
+        globalConfig = final;
+
+        // Validate
+        const result = ConfigValidator.validate(final);
+        if (!result.ok) {
+            result.errors.forEach(e => console.error('[Config]', e));
+            Toast.show(`Konfigurationsfehler: ${result.errors[0]}`, 'error', 5000);
+        }
+        result.warnings.forEach(w => console.warn('[Config]', w));
+
+        // Cache (needs globalConfig set first so CacheManager can read settings)
+        CacheManager.set('portal_config', config, 'config');
+
+        return final;
     } catch (error) {
         console.error('Error loading config:', error);
+
+        // Fallback to stale cache
+        const stale = CacheManager.getStale('portal_config');
+        if (stale) {
+            Toast.show('Config-Ladung fehlgeschlagen – verwende zwischengespeicherte Version', 'warning', 4000);
+            globalConfig = applyConfigDefaults(stale);
+            return globalConfig;
+        }
         return null;
     }
 }
 
-// Render the message banner
+function applyConfigDefaults(config) {
+    config.request_timeout = config.request_timeout || 10;
+    config.max_retries = config.max_retries || 3;
+    config.rss_refresh_interval = config.rss_refresh_interval || 0; // 0 = off
+    config.features = config.features || {};
+    config.features.search_enabled  = config.features.search_enabled  ?? true;
+    config.features.keyboard_shortcuts = config.features.keyboard_shortcuts ?? true;
+    config.features.analytics_enabled = config.features.analytics_enabled ?? false;
+
+    // Cache defaults – backward compat with Phase 1 cache_duration field
+    if (!config.cache) {
+        config.cache = {
+            enabled: true,
+            rss_enabled: true,
+            rss_duration: config.cache_duration || 300,
+            config_enabled: true,
+            config_duration: 60
+        };
+    } else {
+        config.cache.enabled = config.cache.enabled ?? true;
+        config.cache.rss_enabled = config.cache.rss_enabled ?? true;
+        config.cache.rss_duration = config.cache.rss_duration ?? config.cache_duration ?? 300;
+        config.cache.config_enabled = config.cache.config_enabled ?? true;
+        config.cache.config_duration = config.cache.config_duration ?? 60;
+    }
+    return config;
+}
+
+// ---- RSS Fetching with retry + rate-limit -----------------------------------
+async function fetchWithRetry(url, opts = {}, retries) {
+    retries = retries ?? (globalConfig?.max_retries || 3);
+    const timeout = (globalConfig?.request_timeout || 10) * 1000;
+
+    for (let attempt = 1; attempt <= retries; attempt++) {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), timeout);
+
+        try {
+            const res = await fetch(url, { ...opts, signal: controller.signal });
+            clearTimeout(timer);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            return res;
+        } catch (err) {
+            clearTimeout(timer);
+            const isLast = attempt === retries;
+            if (isLast) throw err;
+            const backoff = Math.min(1000 * Math.pow(2, attempt - 1), 8000);
+            console.warn(`[Fetch] Attempt ${attempt}/${retries} failed, retry in ${backoff}ms`, err.message);
+            await new Promise(r => setTimeout(r, backoff));
+        }
+    }
+}
+
+async function fetchRSSItems(feedUrl, maxItems = 5) {
+    const cacheKey = `rss_cache_${feedUrl}`;
+
+    // Cache check
+    const cached = CacheManager.get(cacheKey, 'rss');
+    if (cached) return cached.slice(0, maxItems);
+
+    // Rate limit: max 5 requests per 60 s per feed
+    if (!RateLimiter.isAllowed(feedUrl, 5, 60)) {
+        Toast.show('Zu viele Anfragen – bitte kurz warten', 'warning', 3000);
+        const stale = CacheManager.getStale(cacheKey);
+        return stale ? stale.slice(0, maxItems) : [];
+    }
+
+    const t0 = performance.now();
+    try {
+        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(feedUrl)}`;
+        const response = await fetchWithRetry(proxyUrl);
+        const data = await response.json();
+
+        if (!data.contents) return [];
+
+        const parser = new DOMParser();
+        const xml = parser.parseFromString(data.contents, 'text/xml');
+        if (xml.querySelector('parsererror')) return [];
+
+        const rssItems = Array.from(xml.querySelectorAll('item')).map(item => ({
+            title: item.querySelector('title')?.textContent || 'Untitled',
+            url:   item.querySelector('link')?.textContent || '#',
+            pubDate: item.querySelector('pubDate')?.textContent
+        }));
+
+        CacheManager.set(cacheKey, rssItems, 'rss');
+
+        // Track health
+        const elapsed = performance.now() - t0;
+        updateRSSHealth(feedUrl, true, elapsed);
+
+        return rssItems.slice(0, maxItems);
+    } catch (error) {
+        console.error('Error fetching RSS:', error);
+        updateRSSHealth(feedUrl, false, 0);
+
+        // Stale fallback
+        const stale = CacheManager.getStale(cacheKey);
+        if (stale) {
+            console.log('[RSS] Using stale cache as fallback for:', feedUrl);
+            Toast.show('RSS: Verwende ältere zwischengespeicherte Daten', 'warning', 3000);
+            return stale.slice(0, maxItems);
+        }
+        return [];
+    }
+}
+
+function updateRSSHealth(url, ok, ms) {
+    if (!rssHealthStatus[url]) rssHealthStatus[url] = { ok: true, fails: 0, lastLoad: 0, avgMs: 0, count: 0 };
+    const h = rssHealthStatus[url];
+    h.ok = ok;
+    h.lastLoad = Date.now();
+    if (ok) {
+        h.fails = 0;
+        h.count++;
+        h.avgMs = h.avgMs ? (h.avgMs * (h.count - 1) + ms) / h.count : ms;
+    } else {
+        h.fails++;
+    }
+}
+
+// ---- Skeleton Loader --------------------------------------------------------
+function showSkeleton(container, count = 3) {
+    container.innerHTML = '';
+    for (let i = 0; i < count; i++) {
+        const s = document.createElement('div');
+        s.className = 'skeleton skeleton-card';
+        container.appendChild(s);
+    }
+}
+
+// ---- Render Helpers ---------------------------------------------------------
 function renderMessage(message) {
     const messageText = document.getElementById('message-text');
     const messageBanner = document.getElementById('message-banner');
-
     if (message && message.trim()) {
         messageText.textContent = message;
         messageBanner.style.display = 'block';
@@ -132,44 +517,12 @@ function renderMessage(message) {
     }
 }
 
-// Fetch RSS feed and return items
-async function fetchRSSItems(feedUrl, maxItems = 5) {
-    try {
-        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(feedUrl)}`;
-        const response = await fetch(proxyUrl);
-        const data = await response.json();
-
-        if (!data.contents) {
-            return [];
-        }
-
-        const parser = new DOMParser();
-        const xml = parser.parseFromString(data.contents, 'text/xml');
-
-        const parseError = xml.querySelector('parsererror');
-        if (parseError) {
-            return [];
-        }
-
-        const items = xml.querySelectorAll('item');
-        return Array.from(items).slice(0, maxItems).map(item => ({
-            title: item.querySelector('title')?.textContent || 'Untitled',
-            url: item.querySelector('link')?.textContent || '#',
-            pubDate: item.querySelector('pubDate')?.textContent
-        }));
-    } catch (error) {
-        console.error('Error fetching RSS:', error);
-        return [];
-    }
-}
-
-// Create a link card element
 function createLinkCard(link) {
-    const linkCard = document.createElement('a');
-    linkCard.className = 'link-card';
-    linkCard.href = link.url;
-    linkCard.target = '_blank';
-    linkCard.rel = 'noopener noreferrer';
+    const a = document.createElement('a');
+    a.className = 'link-card';
+    a.href = link.url;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
 
     const iconSpan = document.createElement('span');
     iconSpan.className = 'link-icon';
@@ -179,24 +532,60 @@ function createLinkCard(link) {
     titleSpan.className = 'link-title';
     titleSpan.textContent = link.title;
 
-    // Add date subtitle for RSS items
     if (link.pubDate) {
-        const dateStr = new Date(link.pubDate).toLocaleDateString('de-DE', {
-            day: 'numeric',
-            month: 'short'
-        });
+        const dateStr = new Date(link.pubDate).toLocaleDateString('de-DE', { day: 'numeric', month: 'short' });
         titleSpan.innerHTML = `${link.title}<span class="link-date">${dateStr}</span>`;
     }
 
-    linkCard.appendChild(iconSpan);
-    linkCard.appendChild(titleSpan);
-    return linkCard;
+    a.appendChild(iconSpan);
+    a.appendChild(titleSpan);
+    return a;
 }
 
-// Render links from configuration
+// ---- Lazy-load RSS Categories with IntersectionObserver ---------------------
+const pendingRSSCategories = new Map();   // element -> { feedUrl, items, icon }
+
+function setupLazyRSS() {
+    if (!('IntersectionObserver' in window)) return; // fallback: already loaded eagerly
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+            const el = entry.target;
+            const meta = pendingRSSCategories.get(el);
+            if (!meta) return;
+            pendingRSSCategories.delete(el);
+            observer.unobserve(el);
+            loadRSSCategory(el, meta);
+        });
+    }, { rootMargin: '200px' });
+
+    pendingRSSCategories.forEach((meta, el) => observer.observe(el));
+}
+
+async function loadRSSCategory(linksGrid, { feedUrl, items, icon }) {
+    showSkeleton(linksGrid, items);
+    try {
+        const rssItems = await fetchRSSItems(feedUrl, items);
+        linksGrid.innerHTML = '';
+        if (rssItems.length === 0) {
+            linksGrid.innerHTML = '<span class="error-text">Keine Artikel gefunden</span>';
+        } else {
+            rssItems.forEach(item => {
+                item.icon = icon;
+                linksGrid.appendChild(createLinkCard(item));
+            });
+        }
+    } catch (error) {
+        console.error('RSS category load error:', error);
+        linksGrid.innerHTML = '<span class="error-text">Fehler beim Laden</span>';
+    }
+}
+
+// ---- Render Links -----------------------------------------------------------
 async function renderLinks(categories) {
     const container = document.getElementById('links-container');
     container.innerHTML = '';
+    pendingRSSCategories.clear();
 
     if (!categories || categories.length === 0) {
         container.innerHTML = '<p class="error">No links configured</p>';
@@ -215,78 +604,51 @@ async function renderLinks(categories) {
         const linksGrid = document.createElement('div');
         linksGrid.className = 'links-grid';
 
-        // Check if this category has an RSS feed
         if (category.rss_feed) {
-            linksGrid.innerHTML = '<span class="loading-text">Laden...</span>';
+            showSkeleton(linksGrid, category.rss_items || 5);
             categoryDiv.appendChild(linksGrid);
             container.appendChild(categoryDiv);
 
-            // Fetch RSS items asynchronously
-            const rssItems = await fetchRSSItems(category.rss_feed, category.rss_items || 5);
-            linksGrid.innerHTML = '';
-
-            if (rssItems.length === 0) {
-                linksGrid.innerHTML = '<span class="error-text">Keine Artikel gefunden</span>';
-            } else {
-                rssItems.forEach(item => {
-                    item.icon = category.rss_icon || 'rss';
-                    linksGrid.appendChild(createLinkCard(item));
-                });
-            }
-        } else if (category.links) {
-            // Regular links
-            category.links.forEach(link => {
-                linksGrid.appendChild(createLinkCard(link));
+            // Register for lazy loading
+            pendingRSSCategories.set(linksGrid, {
+                feedUrl: category.rss_feed,
+                items: category.rss_items || 5,
+                icon: category.rss_icon || 'rss'
             });
+        } else if (category.links) {
+            category.links.forEach(link => linksGrid.appendChild(createLinkCard(link)));
             categoryDiv.appendChild(linksGrid);
             container.appendChild(categoryDiv);
         }
     }
+
+    // Kick off lazy loading
+    setupLazyRSS();
 }
 
-// Fetch and render RSS feed using a CORS proxy
+// ---- Sidebar RSS Feed -------------------------------------------------------
 async function loadRSSFeed(feedUrl, maxItems = 5) {
     const container = document.getElementById('rss-container');
-
     if (!feedUrl) {
         container.innerHTML = '<p class="error">No RSS feed configured</p>';
         return;
     }
 
+    showSkeleton(container, maxItems);
+
     try {
-        // Use a CORS proxy to fetch the RSS feed
-        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(feedUrl)}`;
-        const response = await fetch(proxyUrl);
-        const data = await response.json();
+        const rssItems = await fetchRSSItems(feedUrl, maxItems);
 
-        if (!data.contents) {
-            throw new Error('Failed to fetch RSS feed');
-        }
-
-        const parser = new DOMParser();
-        const xml = parser.parseFromString(data.contents, 'text/xml');
-
-        // Check for parsing errors
-        const parseError = xml.querySelector('parsererror');
-        if (parseError) {
-            throw new Error('Failed to parse RSS feed');
-        }
-
-        const items = xml.querySelectorAll('item');
-        container.innerHTML = '';
-
-        if (items.length === 0) {
+        if (rssItems.length === 0) {
             container.innerHTML = '<p class="error">No items in feed</p>';
             return;
         }
 
-        const itemsToShow = Array.from(items).slice(0, maxItems);
-
-        itemsToShow.forEach(item => {
-            const title = item.querySelector('title')?.textContent || 'Untitled';
-            const link = item.querySelector('link')?.textContent || '#';
-            const pubDate = item.querySelector('pubDate')?.textContent;
-            const description = item.querySelector('description')?.textContent || '';
+        container.innerHTML = '';
+        rssItems.forEach(rssItem => {
+            const title = rssItem.title;
+            const link  = rssItem.url;
+            const pubDate = rssItem.pubDate;
 
             const itemDiv = document.createElement('div');
             itemDiv.className = 'rss-item';
@@ -305,42 +667,120 @@ async function loadRSSFeed(feedUrl, maxItems = 5) {
                 const dateEl = document.createElement('p');
                 dateEl.className = 'rss-item-date';
                 dateEl.textContent = new Date(pubDate).toLocaleDateString('de-DE', {
-                    year: 'numeric',
-                    month: 'short',
-                    day: 'numeric'
+                    year: 'numeric', month: 'short', day: 'numeric'
                 });
                 itemDiv.appendChild(dateEl);
             }
 
-            // Strip HTML from description and truncate
-            if (description) {
-                const descEl = document.createElement('p');
-                descEl.className = 'rss-item-description';
-                const tempDiv = document.createElement('div');
-                tempDiv.innerHTML = description;
-                const plainText = tempDiv.textContent || tempDiv.innerText || '';
-                descEl.textContent = plainText.length > 150
-                    ? plainText.substring(0, 150) + '...'
-                    : plainText;
-                itemDiv.appendChild(descEl);
-            }
-
             container.appendChild(itemDiv);
         });
+
+        Toast.show(`RSS: ${rssItems.length} Nachrichten geladen`, 'success', 2000);
     } catch (error) {
         console.error('Error loading RSS feed:', error);
-        container.innerHTML = '<p class="error">Failed to load RSS feed. Please check the URL or try again later.</p>';
+        container.innerHTML = '<p class="error">RSS Feed konnte nicht geladen werden.</p>';
+        Toast.show('RSS: Fehler beim Laden', 'error', 4000, [
+            { label: 'Erneut versuchen', onClick: () => loadRSSFeed(feedUrl, maxItems) }
+        ]);
     }
 }
 
-// Apply site configuration (name, logo, favicon)
+// ---- RSS Auto-Refresh -------------------------------------------------------
+function startAutoRefresh() {
+    const intervalSec = globalConfig?.rss_refresh_interval;
+    if (!intervalSec || intervalSec <= 0) return;
+
+    if (rssAutoRefreshTimer) clearInterval(rssAutoRefreshTimer);
+    rssAutoRefreshTimer = setInterval(() => {
+        console.log('[AutoRefresh] Refreshing RSS feeds…');
+        // Clear RSS cache to force fresh fetch
+        CacheManager.clear('rss_cache_');
+        loadRSSFeed(globalConfig.rss_feed, globalConfig.rss_items || 5);
+        renderLinks(globalConfig.categories);
+        Toast.show('RSS-Feeds automatisch aktualisiert', 'info', 2000);
+    }, intervalSec * 1000);
+
+    console.log(`[AutoRefresh] Started – interval ${intervalSec}s`);
+}
+
+// ---- Pull to Refresh (mobile) ----------------------------------------------
+function initPullToRefresh() {
+    let startY = 0;
+    let pulling = false;
+    let indicator = null;
+
+    document.addEventListener('touchstart', e => {
+        if (window.scrollY === 0) {
+            startY = e.touches[0].pageY;
+            pulling = true;
+        }
+    }, { passive: true });
+
+    document.addEventListener('touchmove', e => {
+        if (!pulling) return;
+        const dy = e.touches[0].pageY - startY;
+        if (dy < 0) { pulling = false; return; }
+
+        if (dy > 50 && !indicator) {
+            indicator = document.createElement('div');
+            indicator.className = 'pull-indicator';
+            indicator.textContent = '↓ Loslassen zum Aktualisieren';
+            document.body.prepend(indicator);
+        }
+        if (indicator) {
+            const progress = Math.min(dy / 120, 1);
+            indicator.style.opacity = progress;
+            indicator.textContent = progress >= 1 ? '↻ Loslassen zum Aktualisieren' : '↓ Ziehen zum Aktualisieren';
+        }
+    }, { passive: true });
+
+    document.addEventListener('touchend', () => {
+        if (indicator) {
+            const shouldRefresh = parseFloat(indicator.style.opacity) >= 1;
+            indicator.remove();
+            indicator = null;
+            if (shouldRefresh) {
+                Toast.show('Aktualisiere…', 'info', 1500);
+                setTimeout(() => hotReloadConfig(), 300);
+            }
+        }
+        pulling = false;
+    });
+}
+
+// ---- Hot Config Reload (no page refresh) ------------------------------------
+async function hotReloadConfig() {
+    // Clear config cache so we get a fresh copy
+    CacheManager.clear('portal_config');
+    CacheManager.clear('rss_cache_');
+
+    const config = await loadConfig();
+    if (!config) {
+        Toast.show('Konfiguration konnte nicht geladen werden', 'error', 4000);
+        return;
+    }
+
+    applySiteConfig(config);
+    renderMessage(config.message);
+    await renderLinks(config.categories);
+    await loadRSSFeed(config.rss_feed, config.rss_items || 5);
+    renderDevBadge();
+    startAutoRefresh();
+
+    // Reload plugins
+    if (typeof PluginManager !== 'undefined') {
+        await PluginManager.reloadAll();
+    }
+
+    Toast.show('Portal aktualisiert ✓', 'success', 2000);
+}
+
+// ---- Apply Site Config ------------------------------------------------------
 function applySiteConfig(config) {
-    // Site name
     const siteName = config.site_name || 'Portal';
     document.title = siteName;
     document.getElementById('site-name').textContent = siteName;
 
-    // Logo
     const logoEl = document.getElementById('site-logo');
     if (config.logo) {
         logoEl.src = config.logo;
@@ -348,17 +788,31 @@ function applySiteConfig(config) {
         logoEl.classList.remove('hidden');
     }
 
-    // Favicon
     if (config.favicon) {
-        const faviconEl = document.getElementById('favicon');
-        faviconEl.href = config.favicon;
+        document.getElementById('favicon').href = config.favicon;
     }
 }
 
-// Initialize the portal
+// ---- Accessibility: live announcements for screen readers -------------------
+function announce(message) {
+    let announcer = document.getElementById('sr-announcer');
+    if (!announcer) {
+        announcer = document.createElement('div');
+        announcer.id = 'sr-announcer';
+        announcer.setAttribute('aria-live', 'polite');
+        announcer.setAttribute('aria-atomic', 'true');
+        announcer.className = 'sr-only';
+        document.body.appendChild(announcer);
+    }
+    announcer.textContent = '';
+    setTimeout(() => { announcer.textContent = message; }, 100);
+}
+
+// ---- Initialisation ---------------------------------------------------------
 async function init() {
     initTheme();
     initDateTime();
+    initPullToRefresh();
 
     const config = await loadConfig();
 
@@ -369,9 +823,21 @@ async function init() {
 
     applySiteConfig(config);
     renderMessage(config.message);
-    renderLinks(config.categories);
-    loadRSSFeed(config.rss_feed, config.rss_items || 5);
+    renderDevBadge();
+    await renderLinks(config.categories);
+    await loadRSSFeed(config.rss_feed, config.rss_items || 5);
+    startAutoRefresh();
+
+    // Phase 3: analytics + admin
+    if (typeof initAnalyticsTracking === 'function') initAnalyticsTracking();
+    if (typeof renderAdminButton === 'function') renderAdminButton();
+
+    // Phase 4: load plugins
+    if (typeof PluginManager !== 'undefined') {
+        await PluginManager.loadAll(config.plugins);
+    }
+
+    announce('Portal geladen');
 }
 
-// Start the app
 document.addEventListener('DOMContentLoaded', init);

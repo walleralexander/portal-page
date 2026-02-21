@@ -3,8 +3,17 @@ services:
     build: .
     container_name: portal-page
     ports:
-      - "80:80"
+      - "${PORT:-80}:80"
     volumes:
       # Mount config directory - edit config/links.yaml to update the portal
       - ./config:/data/config:ro
+    environment:
+      - NODE_ENV=${NODE_ENV:-production}
+      - NGINX_HOST=${NGINX_HOST:-localhost}
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/"] 
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s

@@ -5,7 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal</title>
     <link rel="icon" id="favicon" href="favicon.ico" type="image/x-icon">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1a1a2e">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="enhancements.css">
+    <link rel="stylesheet" href="admin.css">
     <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
 </head>
 <body>
@@ -50,6 +56,21 @@
         </div>
     </div>
 
+    <script src="plugins/plugins.js"></script>
     <script src="app.js"></script>
+    <script src="analytics.js"></script>
+    <script src="admin.js"></script>
+    <script src="keyboard-shortcuts.js"></script>
+    <script src="search-feature.js"></script>
+    <script>
+        // Register Service Worker for PWA offline support
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(reg => console.log('[SW] Registered:', reg.scope))
+                    .catch(err => console.warn('[SW] Registration failed:', err));
+            });
+        }
+    </script>
 </body>
 </html>

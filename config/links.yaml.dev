@@ -1,0 +1,70 @@
+# ===========================================================================
+# Development configuration – caching fully disabled
+# ===========================================================================
+# Copy this over config/links.yaml while developing:
+#   cp config/links.yaml.dev config/links.yaml
+#
+# Or selectively disable only parts you're testing:
+#   cache:
+#     enabled: true
+#     rss_enabled: false      # <-- only RSS caching off
+#     config_enabled: true    # <-- config caching still on
+# ===========================================================================
+
+site_name: "VMCV Portal [DEV]"
+logo: "https://www.vmcv.at/wp-content/uploads/2023/10/VMCV-Logo_2023_100x100.webp"
+favicon: "https://www.vmcv.at/wp-content/uploads/2023/10/cropped-android-chrome-512x512-1-192x192.webp"
+message: "🛠 DEVELOPMENT MODE – All caching disabled"
+
+request_timeout: 10
+max_retries: 1             # fewer retries for faster feedback during dev
+
+# ---- ALL CACHING OFF ----
+cache:
+  enabled: false           # Master switch OFF → nothing is cached
+
+features:
+  search_enabled: true
+  keyboard_shortcuts: true
+  analytics_enabled: false
+
+rss_feed: "https://www.vmcv.at/news/rss2/"
+rss_items: 5
+rss_refresh_interval: 0   # No auto-refresh in dev
+
+categories:
+  - name: "VMCV"
+    links:
+      - title: "WebSite"
+        url: "https://www.vmcv.at"
+        icon: "home"
+      - title: "Cloud"
+        url: "https://cloud.vmcv.at"
+        icon: "cloud"
+      - title: "Bilder"
+        url: "https://bilder.vmcv.at"
+        icon: "image"
+
+  - name: "VMCV Verbindungen"
+    links:
+      - title: "Augia"
+        url: "https://www.augia.at"
+        icon: "www"
+      - title: "Bregancea"
+        url: "https://www.bregancea.at"
+        icon: "www"
+      - title: "Clunia"
+        url: "https://www.clunia.at"
+        icon: "www"
+      - title: "Kustersberg"
+        url: "https://www.kustersberg.at"
+        icon: "www"
+      - title: "Rhenania"
+        url: "https://www.rhenania.at"
+        icon: "www"
+      - title: "Siegberg"
+        url: "https://www.siegberg.at"
+        icon: "www"
+      - title: "Sonnenberg"
+        url: "https://www.topsob.at"
+        icon: "www"

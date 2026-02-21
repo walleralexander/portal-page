@@ -1,0 +1,267 @@
+/* =============================================================================
+   Portal Page – Enhanced CSS (Phase 2)
+   ============================================================================= */
+
+/* ---- Search ---------------------------------------------------------------- */
+.search-container {
+    position: relative;
+    margin-right: 16px;
+}
+
+.search-input {
+    width: 200px;
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    background: var(--card-background);
+    color: var(--text-color);
+    font-size: 0.9rem;
+    transition: all 0.15s ease;
+    box-shadow: var(--shadow);
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--hover-color);
+    box-shadow: 0 0 0 3px rgba(45, 108, 176, 0.1);
+    width: 260px;
+}
+
+.search-input::placeholder {
+    color: var(--text-light);
+}
+
+/* ---- Skeleton loading animation -------------------------------------------- */
+.skeleton {
+    background: linear-gradient(90deg,
+        var(--border-color) 25%, transparent 50%, var(--border-color) 75%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s ease-in-out infinite;
+    border-radius: 6px;
+}
+
+.skeleton-card {
+    height: 40px;
+    margin-bottom: 10px;
+}
+
+@keyframes skeleton-loading {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* ---- Link card hover improvements ----------------------------------------- */
+.link-card {
+    transform: translateY(0);
+    transition: all 0.2s ease;
+}
+
+.link-card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+[data-theme="dark"] .link-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* ---- Category fade-in ------------------------------------------------------ */
+.category {
+    animation: fadeInUp 0.3s ease-out both;
+}
+
+.category:nth-child(2) { animation-delay: 0.05s; }
+.category:nth-child(3) { animation-delay: 0.10s; }
+.category:nth-child(4) { animation-delay: 0.15s; }
+.category:nth-child(5) { animation-delay: 0.20s; }
+.category:nth-child(6) { animation-delay: 0.25s; }
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0);    }
+}
+
+/* ---- Focus indicators (accessibility) -------------------------------------- */
+.link-card:focus-visible,
+.theme-toggle:focus-visible,
+.search-input:focus-visible {
+    outline: 2px solid var(--hover-color);
+    outline-offset: 2px;
+}
+
+/* ---- Toast notification system --------------------------------------------- */
+.toast-container {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    pointer-events: none;
+    max-width: 380px;
+}
+
+.toast {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: var(--border-radius);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #fff;
+    pointer-events: auto;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+    transform: translateX(110%);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    white-space: pre-line;
+}
+
+.toast.show {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+.toast.hide {
+    transform: translateX(110%);
+    opacity: 0;
+}
+
+.toast-info    { background: #3182ce; }
+.toast-success { background: #38a169; }
+.toast-error   { background: #e53e3e; }
+.toast-warning { background: #d69e2e; color: #1a202c; }
+
+.toast-message {
+    flex: 1;
+}
+
+.toast-close {
+    background: none;
+    border: none;
+    color: inherit;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0 2px;
+    opacity: 0.7;
+    line-height: 1;
+}
+
+.toast-close:hover {
+    opacity: 1;
+}
+
+.toast-actions {
+    display: flex;
+    gap: 6px;
+}
+
+.toast-action-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: inherit;
+    padding: 3px 10px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.toast-action-btn:hover {
+    background: rgba(255, 255, 255, 0.35);
+}
+
+/* ---- Dev Mode Badge -------------------------------------------------------- */
+.dev-badge {
+    position: fixed;
+    bottom: 12px;
+    left: 12px;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    font-family: monospace;
+    z-index: 9999;
+    pointer-events: none;
+    user-select: none;
+    letter-spacing: 0.5px;
+}
+
+.dev-badge-full {
+    background: #e53e3e;
+    color: #fff;
+    animation: pulse-badge 2s ease-in-out infinite;
+}
+
+.dev-badge-partial {
+    background: #d69e2e;
+    color: #1a202c;
+}
+
+@keyframes pulse-badge {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: 0.6; }
+}
+
+/* ---- Pull-to-refresh indicator --------------------------------------------- */
+.pull-indicator {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+    padding: 12px;
+    background: var(--hover-color);
+    color: #fff;
+    font-size: 0.85rem;
+    font-weight: 600;
+    z-index: 9999;
+    transition: opacity 0.15s;
+}
+
+/* ---- Screen-reader only ---------------------------------------------------- */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}
+
+/* ---- Responsive tweaks ----------------------------------------------------- */
+@media (max-width: 768px) {
+    .search-input {
+        width: 150px;
+        font-size: 0.85rem;
+    }
+    .search-input:focus {
+        width: 180px;
+    }
+    .toast-container {
+        left: 16px;
+        right: 16px;
+        max-width: none;
+    }
+    .dev-badge {
+        font-size: 0.65rem;
+        padding: 4px 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .search-container {
+        margin-right: 8px;
+    }
+    .search-input {
+        width: 120px;
+        padding: 6px 8px;
+    }
+    .search-input:focus {
+        width: 140px;
+    }
+}
