@@ -185,6 +185,7 @@
     font-family: monospace;
     z-index: 9999;
     pointer-events: none;
+    -webkit-user-select: none;
     user-select: none;
     letter-spacing: 0.5px;
 }

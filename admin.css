@@ -90,7 +90,6 @@ body.admin-open::before {
     padding: 0 12px;
     flex-shrink: 0;
     overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
 }
 
 .admin-tab-btn {
