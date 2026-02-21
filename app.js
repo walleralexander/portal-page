@@ -11,8 +11,7 @@ const rssHealthStatus = {};       // { url: { ok, fails, lastLoad, avgMs } }
 let siteLogoUrl = '';
 
 // Store RSS proxy URL (configurable via links.yaml)
-const DEFAULT_RSS_PROXY = 'https://api.allorigins.win/get?url=';
-let rssProxyUrl = DEFAULT_RSS_PROXY;
+let rssProxyUrl = 'https://api.allorigins.win/get?url=';
 
 // ---- Cache Manager ----------------------------------------------------------
 // Granular cache that can be disabled fully or per-type via config.
@@ -217,11 +216,6 @@ const Toast = {
         setTimeout(() => { if (toast.parentNode) toast.remove(); }, 300);
     }
 };
-
-// Keep backward compat with Phase 1 callers
-function showStatus(message, type = 'info', duration = 3000) {
-    Toast.show(message, type, duration);
-}
 
 // ---- Dev Mode Badge ---------------------------------------------------------
 function renderDevBadge() {
@@ -576,7 +570,10 @@ function createLinkCard(link) {
     // Handle special "logo" icon - use site logo image
     if (iconName === 'logo' && siteLogoUrl) {
         iconSpan.className = 'link-icon logo-icon';
-        iconSpan.innerHTML = `<img src="${siteLogoUrl}" alt="Logo">`;
+        const img = document.createElement('img');
+        img.src = siteLogoUrl;
+        img.alt = 'Logo';
+        iconSpan.appendChild(img);
     } else {
         iconSpan.className = iconName.startsWith('couleur-') ? 'link-icon couleur-icon' : 'link-icon';
         iconSpan.innerHTML = getIcon(iconName);
@@ -588,7 +585,12 @@ function createLinkCard(link) {
 
     if (link.pubDate) {
         const dateStr = new Date(link.pubDate).toLocaleDateString('de-DE', { day: 'numeric', month: 'short' });
-        titleSpan.innerHTML = `${link.title}<span class="link-date">${dateStr}</span>`;
+        titleSpan.textContent = '';
+        titleSpan.appendChild(document.createTextNode(link.title));
+        const dateSpan = document.createElement('span');
+        dateSpan.className = 'link-date';
+        dateSpan.textContent = dateStr;
+        titleSpan.appendChild(dateSpan);
     }
 
     a.appendChild(iconSpan);

@@ -323,13 +323,6 @@ body {
     color: var(--text-light);
 }
 
-.rss-item-description {
-    font-size: 0.85rem;
-    color: var(--text-light);
-    margin-top: 8px;
-    line-height: 1.4;
-}
-
 .loading, .error {
     text-align: center;
     padding: 20px;

@@ -70,7 +70,7 @@ document.addEventListener('keydown', (e) => {
                     const short = new URL(url).hostname;
                     return `${short}: ${h.ok ? '✓' : '✗'} ${h.avgMs ? Math.round(h.avgMs) + 'ms' : '–'} (${h.fails} fails)`;
                 });
-                Toast.show(lines.join('\n'), h => h.ok ? 'success' : 'warning', 6000);
+                Toast.show(lines.join('\n'), 'info', 6000);
             }
         }
     }
