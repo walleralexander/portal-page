@@ -11,12 +11,13 @@ services:
       - NODE_ENV=${NODE_ENV:-production}
       - NGINX_HOST=${NGINX_HOST:-localhost}
     restart: unless-stopped
+    # ponytail: liveness via /proc listen-socket (80=0050). no http client/auth/wget dep.
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/"]
+      test: ["CMD-SHELL", "awk '$4==\"0A\" && $2 ~ /:0050$/{f=1} END{exit !f}' /proc/net/tcp /proc/net/tcp6"]
       interval: 30s
-      timeout: 10s
+      timeout: 5s
       retries: 3
-      start_period: 30s
+      start_period: 40s
     networks:
       - dockernet
 networks:
