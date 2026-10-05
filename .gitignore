@@ -1,2 +1,6 @@
 # User-specific configuration (copy links.yaml.example to links.yaml)
 config/links.yaml
+
+# Editor-Sicherungen und Backups des Config-Editors
+*~
+config/.backups/
