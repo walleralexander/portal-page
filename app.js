@@ -686,7 +686,11 @@ async function renderLinks(categories) {
 async function loadRSSFeed(feedUrl, maxItems = 5) {
     const container = document.getElementById('rss-container');
     if (!feedUrl) {
-        container.innerHTML = '<p class="error">No RSS feed configured</p>';
+        // Kein Feed konfiguriert: News-Kasten ausblenden, Links nutzen die volle Breite
+        const section = container.closest('.rss-section');
+        if (section) section.style.display = 'none';
+        const main = document.querySelector('.main-content');
+        if (main) main.style.gridTemplateColumns = '1fr';
         return;
     }
 

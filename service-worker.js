@@ -1,7 +1,7 @@
 // =============================================================================
 // Portal Page – Service Worker (Phase 3 PWA)
 // =============================================================================
-const CACHE_NAME = 'portal-v4';
+const CACHE_NAME = 'portal-v5';
 const STATIC_ASSETS = [
     '/',
     '/index.html',
