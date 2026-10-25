@@ -9,6 +9,6 @@
 - [ ] NPM-Forward auf `vmcv-portal:80` umstellen, dann Alias `portal-page` entfernen
 - [ ] v2: Keycloak-Login statt eigenem Admin-Login (siehe vmcv-admin/docs/BENUTZERVERWALTUNG.md)
 - [x] Formular-Aenderungen committen — erledigt 2026-10-25: committet
-- [ ] Meldeformular einmal echt absenden, Eingang beim Empfaenger pruefen
+- [ ] Eingang der Testmeldung (queued 8DD412560A62) im Empfaenger-Postfach bestaetigen
 - [ ] Vor Produktivbetrieb: `no-store` in nginx.conf durch Caching fuer Bilder/Fonts ersetzen
 - [ ] `public/service-worker.js` (Selbstzerstoerer) fruehestens 2027 loeschen, wenn keine alten Registrierungen mehr aktiv

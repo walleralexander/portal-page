@@ -1,5 +1,9 @@
 # Status – vmcv-portal
 
+## Recap 2026-10-25 (13)
+- Alex bestaetigt: Seite jetzt aktuell (SW-Selbstzerstoerer hat gewirkt).
+- Erste echte Meldung 22:37 UTC: /api/report 200, mailrelay -> mailserver.meinweb.at "250 queued as 8DD412560A62". Eingang im Postfach noch zu bestaetigen.
+
 ## Recap 2026-10-25 (12)
 - PWA entfernt (Lehre aus /stacks/vmcv-cal/POSTMORTEM.md): `public/service-worker.js` ist nur noch Selbstzerstoerer (loescht Caches, meldet sich ab, laedt Tabs neu). index.html registriert keinen SW mehr und entfernt alte Registrierungen + Caches. offline.html und unbenutzte manifest.json geloescht.
 - Selbstzerstoerer liegen lassen, bis keine alten Registrierungen mehr im Umlauf sind.
