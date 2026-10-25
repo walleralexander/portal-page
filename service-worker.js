@@ -1,7 +1,7 @@
 // =============================================================================
 // Portal Page – Service Worker (Phase 3 PWA)
 // =============================================================================
-const CACHE_NAME = 'portal-v10';
+const CACHE_NAME = 'portal-v11';
 const STATIC_ASSETS = [
     '/',
     '/index.html',
@@ -62,7 +62,9 @@ self.addEventListener('fetch', (event) => {
 
 async function networkFirst(request) {
     try {
-        const response = await fetch(request);
+        // no-cache: am HTTP-Cache vorbei beim Server nachfragen (ETag), sonst bleiben
+        // frueher als "immutable" gecachte Dateien bis zu einem Tag haengen.
+        const response = await fetch(request, { cache: 'no-cache' });
         if (response.ok) {
             const cache = await caches.open(CACHE_NAME);
             cache.put(request, response.clone());
