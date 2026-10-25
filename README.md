@@ -136,13 +136,11 @@ To restart the container after configuration changes:
 docker compose up -d
 ```
 
-### Rebuilding the Container
+### Editing the Site
 
-Changes to `app.js`, `styles.css`, `index.html`, or other source files require rebuilding the Docker container:
+The site lives in `public/` and is bind-mounted into the nginx container, so changes to `index.html`, `app.js`, `styles.css` etc. are live immediately (no rebuild). During development nginx sends `Cache-Control: no-store` for everything.
 
-```bash
-docker compose up -d --build
-```
+Changes to `nginx.conf` need `docker compose restart portal`.
 
 ## License
 

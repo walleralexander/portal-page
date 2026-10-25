@@ -1,5 +1,10 @@
 # Status – vmcv-portal
 
+## Recap 2026-10-25 (11)
+- Umbau wie vmcv-couleur-wiki: Web-Dateien nach `public/`, Compose `image: nginx:alpine` mit ro-Mounts (`public/`, `nginx.conf`, `config/`). Dockerfile + Build entfallen; Aenderungen in `public/` sind sofort live.
+- Entwicklungsphase: nginx sendet fuer alles `Cache-Control: no-store` (Server-Ebene, Security-Header bleiben). Nur `nginx.conf`-Aenderungen brauchen `docker compose restart portal`.
+- Geprueft: Testdatei in public/ sofort abrufbar; .git, report.env, api/*.php nicht abrufbar (Fallback index.html); /api/report antwortet.
+
 ## Recap 2026-10-25 (10)
 - Nutzer sah alte Formular-Version (Rechenaufgabe, "Kontaktadresse fehlt"). Ursache: Service Worker cache-first fuer HTML/JS/CSS.
 - SW jetzt network-first (Cache nur offline), `portal-v10`; beim Update laedt er offene Tabs einmal automatisch neu.

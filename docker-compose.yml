@@ -1,9 +1,13 @@
 services:
   portal:
-    build: .
+    image: nginx:alpine
     container_name: vmcv-portal
     # Kein Port-Publish: NPM erreicht portal-page:80 ueber dockernet (Host-Port 80 gehoert NPM). 2026-10-05
     volumes:
+      # Website direkt gemountet: Aenderungen in public/ greifen sofort, kein Rebuild.
+      - ./public:/usr/share/nginx/html:ro
+      # nginx.conf: nach Aenderung `docker compose restart portal`
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
       # Mount config directory - edit config/links.yaml to update the portal
       - ./config:/data/config:ro
     environment:
