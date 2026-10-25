@@ -1,5 +1,9 @@
 # Status – vmcv-portal
 
+## Recap 2026-10-25 (12)
+- PWA entfernt (Lehre aus /stacks/vmcv-cal/POSTMORTEM.md): `public/service-worker.js` ist nur noch Selbstzerstoerer (loescht Caches, meldet sich ab, laedt Tabs neu). index.html registriert keinen SW mehr und entfernt alte Registrierungen + Caches. offline.html und unbenutzte manifest.json geloescht.
+- Selbstzerstoerer liegen lassen, bis keine alten Registrierungen mehr im Umlauf sind.
+
 ## Recap 2026-10-25 (11)
 - Umbau wie vmcv-couleur-wiki: Web-Dateien nach `public/`, Compose `image: nginx:alpine` mit ro-Mounts (`public/`, `nginx.conf`, `config/`). Dockerfile + Build entfallen; Aenderungen in `public/` sind sofort live.
 - Entwicklungsphase: nginx sendet fuer alles `Cache-Control: no-store` (Server-Ebene, Security-Header bleiben). Nur `nginx.conf`-Aenderungen brauchen `docker compose restart portal`.

@@ -106,14 +106,9 @@
     <script src="keyboard-shortcuts.js"></script>
     <script src="search-feature.js"></script>
     <script>
-        // Register Service Worker for PWA offline support
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/service-worker.js')
-                    .then(reg => console.log('[SW] Registered:', reg.scope))
-                    .catch(err => console.warn('[SW] Registration failed:', err));
-            });
-        }
+        // Keine PWA mehr: alte Service-Worker-Registrierungen und deren Caches entfernen.
+        navigator.serviceWorker?.getRegistrations().then(regs => regs.forEach(r => r.unregister()));
+        window.caches?.keys().then(keys => keys.forEach(k => caches.delete(k)));
     </script>
 </body>
 </html>
