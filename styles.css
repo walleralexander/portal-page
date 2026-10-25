@@ -40,6 +40,10 @@ body {
     color: var(--text-color);
 }
 
+html {
+    scroll-behavior: smooth;
+}
+
 .container {
     max-width: 1400px;
     margin: 0 auto;
@@ -103,6 +107,29 @@ body {
     cursor: pointer;
     transition: all 0.15s ease;
     box-shadow: var(--shadow);
+}
+
+.report-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    padding: 0 14px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    background: var(--card-background);
+    color: var(--text-color);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+    box-shadow: var(--shadow);
+    transition: all 0.15s ease;
+}
+
+.report-link:hover {
+    background: var(--background-color);
+    color: var(--hover-color);
+    border-color: var(--text-light);
 }
 
 .theme-toggle:hover {
@@ -333,6 +360,139 @@ body {
     color: var(--accent-color);
 }
 
+/* Entry Report Form */
+.report-section {
+    margin-top: 20px;
+    background: var(--card-background);
+    border-radius: var(--border-radius);
+    padding: 24px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-color);
+}
+
+.report-title {
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+    color: var(--text-light);
+    margin-bottom: 8px;
+}
+
+.report-description {
+    font-size: 0.95rem;
+    color: var(--text-color);
+    margin-bottom: 16px;
+}
+
+.report-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.report-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.report-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.report-field label {
+    font-size: 0.85rem;
+    color: var(--text-light);
+    font-weight: 600;
+}
+
+.report-field input,
+.report-field select,
+.report-field textarea {
+    width: 100%;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background: var(--background-color);
+    color: var(--text-color);
+    padding: 10px 12px;
+    font: inherit;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.report-field textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+.report-field input:focus,
+.report-field select:focus,
+.report-field textarea:focus {
+    outline: none;
+    border-color: var(--hover-color);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--hover-color) 18%, transparent);
+}
+
+.report-bot-field input {
+    max-width: 220px;
+}
+
+.report-honeypot {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.report-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 4px;
+}
+
+.report-submit-btn {
+    border: 1px solid var(--border-color);
+    background: var(--text-color);
+    color: var(--card-background);
+    border-radius: 6px;
+    padding: 10px 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.report-submit-btn:hover {
+    opacity: 0.92;
+}
+
+.report-submit-btn:active {
+    transform: translateY(1px);
+}
+
+.report-submit-btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.report-status {
+    font-size: 0.9rem;
+    min-height: 1.3em;
+}
+
+.report-status.ok {
+    color: #2f855a;
+}
+
+.report-status.error {
+    color: #c53030;
+}
+
 /* Responsive Design */
 @media (max-width: 1024px) {
     .main-content {
@@ -367,6 +527,15 @@ body {
         grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
         gap: 8px;
     }
+
+    .report-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .report-actions {
+        flex-direction: column;
+        align-items: flex-start;
+    }
 }
 
 @media (max-width: 480px) {
@@ -376,6 +545,16 @@ body {
 
     .datetime {
         display: none;
+    }
+
+    .header-right {
+        gap: 8px;
+    }
+
+    .report-link {
+        height: 36px;
+        padding: 0 10px;
+        font-size: 0.8rem;
     }
 
     .site-name {
@@ -392,7 +571,8 @@ body {
     }
 
     .links-section,
-    .rss-section {
+    .rss-section,
+    .report-section {
         padding: 16px;
     }
 
