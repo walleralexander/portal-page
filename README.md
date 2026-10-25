@@ -39,7 +39,6 @@ site_name: "My Portal"
 logo: "https://example.com/logo.png"
 favicon: "https://example.com/favicon.ico"
 message: "Welcome to my portal!"
-contact_email: "portal@example.com"
 
 # RSS Feed (sidebar)
 rss_feed: "https://example.com/feed.xml"
@@ -66,9 +65,9 @@ categories:
 
 The page includes a built-in contact form for reporting wrong or missing entries.
 
-- Set `contact_email` in `config/links.yaml`.
-- The form uses lightweight bot protection (honeypot field, minimum fill time, and math challenge).
-- Submission opens the user's email client (`mailto:`) with prefilled report details.
+- Copy `report.env.example` to `report.env` and set `REPORT_TO` (recipient). `report.env` is gitignored, the address never reaches the browser.
+- The form posts to `/api/report` (`api/report.php`, PHP-FPM container), which sends via the `mailrelay` SMTP container.
+- Server-side bot protection: honeypot field, minimum fill time, 3 reports per IP per 10 minutes.
 
 ## Available Icons
 

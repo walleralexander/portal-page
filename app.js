@@ -12,7 +12,6 @@ let siteLogoUrl = '';
 
 // Store RSS proxy URL (configurable via links.yaml)
 let rssProxyUrl = 'https://api.allorigins.win/get?url=';
-let reportChallengeAnswer = null;
 
 // ---- Cache Manager ----------------------------------------------------------
 // Granular cache that can be disabled fully or per-type via config.
@@ -423,7 +422,6 @@ function applyConfigDefaults(config) {
     config.features.search_enabled  = config.features.search_enabled  ?? true;
     config.features.keyboard_shortcuts = config.features.keyboard_shortcuts ?? true;
     config.features.analytics_enabled = config.features.analytics_enabled ?? false;
-    config.contact_email = (config.contact_email || '').trim();
 
     // Cache defaults – backward compat with Phase 1 cache_duration field
     if (!config.cache) {
@@ -445,6 +443,7 @@ function applyConfigDefaults(config) {
 }
 
 // ---- Contact / Report Form -------------------------------------------------
+// Versand serverseitig ueber api/report.php; Empfaenger und Bot-Pruefung dort.
 function setReportStatus(message, type = '') {
     const statusEl = document.getElementById('report-status');
     if (!statusEl) return;
@@ -453,124 +452,48 @@ function setReportStatus(message, type = '') {
     if (type) statusEl.classList.add(type);
 }
 
-function resetReportChallenge() {
-    const a = Math.floor(Math.random() * 8) + 2;
-    const b = Math.floor(Math.random() * 8) + 2;
-    reportChallengeAnswer = a + b;
-
-    const label = document.getElementById('report-math-label');
-    const input = document.getElementById('report-math');
+function resetReportStartedAt() {
     const startedAt = document.getElementById('report-started-at');
-
-    if (label) label.textContent = `Bot-Schutz: Bitte ${a} + ${b} rechnen`;
-    if (input) input.value = '';
     if (startedAt) startedAt.value = String(Date.now());
 }
 
-function buildReportMailBody(formData) {
-    const lines = [
-        'Hallo,',
-        '',
-        'es gibt eine Meldung zu einem Portal-Eintrag:',
-        '',
-        `Art: ${formData.type}`,
-        `Betroffener Link: ${formData.url || '(nicht angegeben)'}`,
-        `Beschreibung:`,
-        formData.details,
-        '',
-        `Rueckmeldung an: ${formData.email || '(keine E-Mail angegeben)'}`,
-        `Seite: ${window.location.href}`,
-        `Zeitpunkt: ${new Date().toLocaleString('de-DE')}`
-    ];
-
-    return lines.join('\n').slice(0, 1800);
-}
-
-async function initReportForm(config) {
+function initReportForm() {
     const form = document.getElementById('entry-report-form');
-    if (!form) return;
-
-    const submitBtn = document.getElementById('report-submit');
-    const contactEmail = (config?.contact_email || '').trim();
-
-    if (submitBtn) submitBtn.disabled = !contactEmail;
-
-    if (!contactEmail) {
-        setReportStatus('Kontaktadresse fehlt. Bitte in links.yaml contact_email setzen.', 'error');
-    } else {
-        setReportStatus('');
-    }
-
-    resetReportChallenge();
-
-    if (form.dataset.initialized === 'true') return;
+    if (!form || form.dataset.initialized === 'true') return;
     form.dataset.initialized = 'true';
+    resetReportStartedAt();
 
     form.addEventListener('submit', async (event) => {
         event.preventDefault();
 
-        const activeContact = (globalConfig?.contact_email || '').trim();
-        if (!activeContact) {
-            setReportStatus('Kontaktadresse fehlt. Bitte Administrator informieren.', 'error');
-            Toast.show('Meldung nicht moeglich: contact_email fehlt', 'error', 3500);
-            return;
-        }
-
-        if (!RateLimiter.isAllowed('report_form_submit', 3, 300)) {
-            setReportStatus('Zu viele Meldungen in kurzer Zeit. Bitte spaeter erneut versuchen.', 'error');
-            return;
-        }
-
-        const type = document.getElementById('report-type')?.value || 'anderes';
-        const url = (document.getElementById('report-url')?.value || '').trim();
         const details = (document.getElementById('report-details')?.value || '').trim();
-        const email = (document.getElementById('report-email')?.value || '').trim();
-        const honeypot = (document.getElementById('report-honeypot')?.value || '').trim();
-        const mathAnswer = Number(document.getElementById('report-math')?.value || NaN);
-        const startedAt = Number(document.getElementById('report-started-at')?.value || 0);
-        const elapsedMs = Date.now() - startedAt;
-
-        if (honeypot) {
-            setReportStatus('Meldung wurde blockiert.', 'error');
-            resetReportChallenge();
-            return;
-        }
-        if (!startedAt || elapsedMs < 3000) {
-            setReportStatus('Bitte kurz warten und dann erneut senden.', 'error');
-            resetReportChallenge();
-            return;
-        }
-        if (mathAnswer !== reportChallengeAnswer) {
-            setReportStatus('Bot-Schutz nicht korrekt geloest.', 'error');
-            resetReportChallenge();
-            return;
-        }
         if (details.length < 10) {
             setReportStatus('Bitte eine genauere Beschreibung eingeben (mindestens 10 Zeichen).', 'error');
             return;
         }
 
-        const mailSubject = `[Portal] Meldung: ${type}`;
-        const mailBody = buildReportMailBody({ type, url, details, email });
-        const mailtoUrl = `mailto:${encodeURIComponent(activeContact)}?subject=${encodeURIComponent(mailSubject)}&body=${encodeURIComponent(mailBody)}`;
+        const submitBtn = document.getElementById('report-submit');
+        if (submitBtn) submitBtn.disabled = true;
+        setReportStatus('Wird gesendet …');
 
         try {
-            window.location.href = mailtoUrl;
-            setReportStatus('E-Mail-Programm wurde geoeffnet. Danke fuer die Meldung.', 'ok');
-            Toast.show('Kontaktmeldung vorbereitet', 'success', 2500);
+            const response = await fetch('/api/report', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(Object.fromEntries(new FormData(form)))
+            });
+            const result = await response.json().catch(() => ({}));
+            if (!response.ok) throw new Error(result.message || 'Senden fehlgeschlagen. Bitte spaeter erneut versuchen.');
 
-            if (navigator.clipboard?.writeText) {
-                const fallbackText = `An: ${activeContact}\nBetreff: ${mailSubject}\n\n${mailBody}`;
-                await navigator.clipboard.writeText(fallbackText);
-            }
-
+            setReportStatus(result.message || 'Danke fuer die Meldung.', 'ok');
+            Toast.show('Meldung verschickt', 'success', 2500);
             form.reset();
-            resetReportChallenge();
+            resetReportStartedAt();
         } catch (error) {
-            console.error('Report form error:', error);
-            setReportStatus('Senden fehlgeschlagen. Bitte direkt per E-Mail melden.', 'error');
-            Toast.show('Kontaktmeldung konnte nicht vorbereitet werden', 'error', 3000);
-            resetReportChallenge();
+            // Eingaben bleiben stehen, damit nichts verloren geht.
+            setReportStatus(error.message, 'error');
+        } finally {
+            if (submitBtn) submitBtn.disabled = false;
         }
     });
 }
@@ -954,7 +877,7 @@ async function hotReloadConfig() {
     }
 
     applySiteConfig(config);
-    initReportForm(config);
+    initReportForm();
     renderMessage(config.message);
     await renderLinks(config.categories);
     await loadRSSFeed(config.rss_feed, config.rss_items || 5);
@@ -1025,7 +948,7 @@ async function init() {
     }
 
     applySiteConfig(config);
-    initReportForm(config);
+    initReportForm();
     renderMessage(config.message);
     renderDevBadge();
     await renderLinks(config.categories);

@@ -74,7 +74,7 @@
                     </div>
                     <div class="report-field">
                         <label for="report-url">Betroffener Link (optional)</label>
-                        <input id="report-url" name="url" type="url" placeholder="https://beispiel.at" autocomplete="url">
+                        <input id="report-url" name="url" type="url" maxlength="500" placeholder="https://beispiel.at" autocomplete="url">
                     </div>
                 </div>
 
@@ -83,15 +83,9 @@
                     <textarea id="report-details" name="details" rows="5" minlength="10" maxlength="1500" required placeholder="Was ist falsch oder welcher Eintrag fehlt?"></textarea>
                 </div>
 
-                <div class="report-grid">
-                    <div class="report-field">
-                        <label for="report-email">Deine E-Mail (optional)</label>
-                        <input id="report-email" name="email" type="email" placeholder="name@beispiel.at" autocomplete="email">
-                    </div>
-                    <div class="report-field report-bot-field">
-                        <label id="report-math-label" for="report-math">Bot-Schutz</label>
-                        <input id="report-math" name="math" type="number" inputmode="numeric" required>
-                    </div>
+                <div class="report-field">
+                    <label for="report-email">Deine E-Mail (optional, fuer Rueckfragen)</label>
+                    <input id="report-email" name="email" type="email" maxlength="200" placeholder="name@beispiel.at" autocomplete="email">
                 </div>
 
                 <input id="report-honeypot" class="report-honeypot" type="text" name="website" autocomplete="off" tabindex="-1" aria-hidden="true">

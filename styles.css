@@ -435,10 +435,6 @@ html {
     box-shadow: 0 0 0 3px color-mix(in srgb, var(--hover-color) 18%, transparent);
 }
 
-.report-bot-field input {
-    max-width: 220px;
-}
-
 .report-honeypot {
     position: absolute;
     left: -9999px;

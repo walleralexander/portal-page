@@ -30,10 +30,6 @@ favicon: ""
 # Message displayed at the top of the page (leave empty to hide)
 message: ""
 
-# Contact email for report form (wrong/missing entries)
-# Example: "portal@your-domain.tld"
-contact_email: ""
-
 # RSS Feed URL for sidebar (leave empty to disable)
 rss_feed: ""
 

@@ -1,5 +1,12 @@
 # Status – vmcv-portal
 
+## Recap 2026-10-25 (9)
+- Meldeformular auf serverseitigen Versand umgebaut: `api/report.php` im Container `vmcv-portal-php` (php:8.3-fpm-alpine), nginx `/api/report` -> fastcgi. Versand per SMTP ueber `mailrelay` (Absender lvs@vmcv.at), Reply-To = Melder.
+- Empfaenger nur in `report.env` (gitignored, Vorlage `report.env.example`). `contact_email` aus links.yaml/JS entfernt -> Adresse nicht mehr oeffentlich.
+- Bot-Schutz jetzt serverseitig: Honeypot, Mindestzeit 3 s, 3 Meldungen/IP/10 min. Rechenaufgabe und mailto/Zwischenablage entfernt. Fehler lassen Eingaben stehen.
+- Getestet: Validierung live (405/400/Honeypot), SMTP-Pfad gegen mailpit (Mail korrekt). Echte Mail an Empfaenger noch nicht getestet.
+- Achtung: `.env` ist im oeffentlichen Repo eingecheckt (nur Defaults, nichts Geheimes) - keine Geheimnisse dort ablegen.
+
 ## Recap 2026-10-25 (8)
 - Empfaengeradresse aus Formular entfernt (nicht mehr sichtbar). Adresse auch aus status/todo entfernt, lokale Commits vor Push neu gebaut.
 - Grenze: mailto braucht die Adresse im Browser, `/links.yaml` ist oeffentlich abrufbar. Ganz verbergen nur mit serverseitigem Versand.

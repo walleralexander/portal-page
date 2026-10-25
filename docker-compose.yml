@@ -10,6 +10,7 @@ services:
       - NODE_ENV=${NODE_ENV:-production}
       - NGINX_HOST=${NGINX_HOST:-localhost}
     restart: unless-stopped
+    depends_on: [php]
     # ponytail: liveness via /proc listen-socket (80=0050). no http client/auth/wget dep.
     healthcheck:
       test: ["CMD-SHELL", "awk '$4==\"0A\" && $2 ~ /:0050$/{f=1} END{exit !f}' /proc/net/tcp /proc/net/tcp6"]
@@ -21,6 +22,15 @@ services:
       dockernet:
         # ponytail: alias haelt NPM-Forward portal-page:80 gueltig. Weg, wenn NPM auf vmcv-portal umgestellt.
         aliases: [portal-page]
+  php:
+    image: php:8.3-fpm-alpine
+    container_name: vmcv-portal-php
+    volumes:
+      - ./api:/var/www/api:ro
+    # REPORT_TO (Empfaenger) nur hier, Datei ist gitignored. Vorlage: report.env.example
+    env_file: report.env
+    restart: unless-stopped
+    networks: [dockernet]
 networks:
   dockernet:
     external: true
