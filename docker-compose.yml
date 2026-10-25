@@ -1,7 +1,7 @@
 services:
   portal:
     build: .
-    container_name: portal-page
+    container_name: vmcv-portal
     # Kein Port-Publish: NPM erreicht portal-page:80 ueber dockernet (Host-Port 80 gehoert NPM). 2026-10-05
     volumes:
       # Mount config directory - edit config/links.yaml to update the portal
@@ -18,7 +18,9 @@ services:
       retries: 3
       start_period: 40s
     networks:
-      - dockernet
+      dockernet:
+        # ponytail: alias haelt NPM-Forward portal-page:80 gueltig. Weg, wenn NPM auf vmcv-portal umgestellt.
+        aliases: [portal-page]
 networks:
   dockernet:
     external: true
