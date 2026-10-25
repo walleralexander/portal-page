@@ -3,6 +3,7 @@
 ## Recap 2026-10-25 (10)
 - Nutzer sah alte Formular-Version (Rechenaufgabe, "Kontaktadresse fehlt"). Ursache: Service Worker cache-first fuer HTML/JS/CSS.
 - SW jetzt network-first (Cache nur offline), `portal-v10`; beim Update laedt er offene Tabs einmal automatisch neu.
+- Nachtrag: Nutzer sah weiter Alt-Stand, weil alte `immutable`-Dateien im HTTP-Cache lagen und auch SW-fetch sie nahm. SW holt jetzt mit `cache: 'no-cache'` (v11). Im echten Browser noch nicht bestaetigt (Playwright startet als root nicht).
 - nginx: HTML/JS/CSS `expires -1` (no-cache). `add_header` in location vermieden, weil es die Security-Header verwirft (war beim JS/CSS-Fix passiert, jetzt behoben).
 
 ## Recap 2026-10-25 (9)
