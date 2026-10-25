@@ -1,5 +1,11 @@
 # Status – vmcv-portal
 
+## Recap 2026-10-25 (14)
+- `public/impressum.html` (Impressum + Datenschutz, Footer-Link auf Startseite). Angaben wie vmcv-app-2026/config/legal.php (VMCV, Bundesstrasse 69a Lauterach, lvv@vmcv.at, Alexander Waller).
+- Rechtsrahmen AT: Pflicht Offenlegung § 25 MedienG (kleine Website: Name + Sitz), § 5 ECG vorsorglich, Datenschutzerklaerung wegen Formular, Server-Logs, Umami. Kein Cookie-Banner noetig (keine Cookies).
+- js-yaml selbst gehostet (`public/vendor/`), jsdelivr aus HTML und CSP entfernt -> kein Drittanbieter mehr.
+- Offen: lokale Klick-/Suchstatistik (analytics.js) - Nutzen fraglich, Einwilligungsfrage § 165 TKG. Entscheidung Alex.
+
 ## Recap 2026-10-25 (13)
 - Alex bestaetigt: Seite jetzt aktuell (SW-Selbstzerstoerer hat gewirkt).
 - Erste echte Meldung 22:37 UTC: /api/report 200, mailrelay -> mailserver.meinweb.at "250 queued as 8DD412560A62". Eingang im Postfach noch zu bestaetigen.

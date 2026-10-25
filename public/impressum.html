@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Impressum und Datenschutz · VMCV Portal</title>
+    <link rel="icon" href="favicon/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="styles.css">
+    <script>
+        // Gleiche Theme-Wahl wie die Startseite (nur lesen)
+        try {
+            const t = localStorage.getItem('theme');
+            if (t === 'dark' || (!t && matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+        } catch {}
+    </script>
+</head>
+<body>
+    <div class="container">
+        <p class="legal-back"><a href="/">&larr; Zurück zum Portal</a></p>
+
+        <!-- Angaben zum Verein wie /workplace/vmcv-app-2026/config/legal.php; bei Aenderungen beide nachziehen. -->
+        <section class="report-section legal">
+            <h1 id="impressum">Impressum</h1>
+            <p class="legal-lead">Offenlegung gemäß § 25 Mediengesetz und Angaben gemäß § 5 E-Commerce-Gesetz</p>
+
+            <h2>Medieninhaber und Herausgeber</h2>
+            <p>
+                Vorarlberger Mittelschülerkartellverband (VMCV)<br>
+                Bundesstraße 69a<br>
+                6945 Lauterach<br>
+                Österreich
+            </p>
+
+            <h2>Für den Inhalt verantwortlich</h2>
+            <p>
+                Alexander Waller<br>
+                Landesverbandsvorsitzender
+            </p>
+
+            <h2>Kontakt</h2>
+            <p>
+                E-Mail: <a href="mailto:lvv@vmcv.at">lvv@vmcv.at</a><br>
+                Web: <a href="https://vmcv.at" target="_blank" rel="noopener">vmcv.at</a>
+            </p>
+
+            <h2>Zweck dieser Seite</h2>
+            <p>
+                Linksammlung des VMCV zu Diensten und Seiten des Verbandes und seiner
+                Verbindungen. Das vollständige Impressum des Vereins steht unter
+                <a href="https://vmcv.at/impressum" target="_blank" rel="noopener">vmcv.at/impressum</a>.
+            </p>
+
+            <h2>Externe Links</h2>
+            <p>
+                Diese Seite verweist auf Angebote Dritter. Für deren Inhalte sind
+                ausschließlich die jeweiligen Betreiber verantwortlich. Werden uns
+                rechtswidrige Inhalte bekannt, entfernen wir den Link umgehend.
+                Hinweise bitte über das Formular „Eintrag melden“ auf der Startseite.
+            </p>
+        </section>
+
+        <section class="report-section legal">
+            <h1 id="datenschutz">Datenschutz</h1>
+
+            <h2>Verantwortlich</h2>
+            <p>
+                Vorarlberger Mittelschülerkartellverband (VMCV),
+                Bundesstraße 69a, 6945 Lauterach,
+                <a href="mailto:lvv@vmcv.at">lvv@vmcv.at</a>
+            </p>
+
+            <h2>Aufruf der Seite</h2>
+            <p>
+                Der Webserver protokolliert jeden Zugriff: IP-Adresse, Zeitpunkt,
+                aufgerufene Adresse und Browserkennung. Das ist für Betrieb und
+                Abwehr von Missbrauch nötig (Art. 6 Abs. 1 lit. f DSGVO). Die
+                Protokolle werden nicht mit anderen Daten zusammengeführt und nur so
+                lange aufbewahrt, wie es dafür erforderlich ist. Der Server steht bei
+                einem Hosting-Anbieter in Deutschland.
+            </p>
+
+            <h2>Besucherstatistik</h2>
+            <p>
+                Wir zählen Seitenaufrufe mit Umami, das auf unserem eigenen Server
+                läuft. Erfasst werden aufgerufene Seite, Herkunftsseite, Browser,
+                Betriebssystem, Gerätetyp und Land. Umami setzt keine Cookies und
+                speichert keine IP-Adressen; Daten gehen an keine Dritten
+                (Art. 6 Abs. 1 lit. f DSGVO, Interesse an einer bedarfsgerechten Seite).
+            </p>
+
+            <h2>Formular „Eintrag melden“</h2>
+            <p>
+                Was Sie in das Formular eintragen (Art der Meldung, Link,
+                Beschreibung und freiwillig Ihre E-Mail-Adresse), wird per E-Mail an
+                den Verband geschickt, um die Meldung zu bearbeiten
+                (Art. 6 Abs. 1 lit. f DSGVO). Der Versand läuft über den Mailserver
+                unseres E-Mail-Anbieters. Die Mail wird gelöscht, wenn die Meldung
+                erledigt ist. Zum Schutz vor Missbrauch wird die IP-Adresse
+                als Hashwert für 10 Minuten gespeichert.
+            </p>
+
+            <h2>Speicherung im Browser</h2>
+            <p>
+                Die Seite setzt keine Cookies. Im lokalen Speicher Ihres Browsers
+                werden die gewählte Darstellung (hell/dunkel), eine Kopie der
+                Linkliste für schnelleres Laden sowie eine Zählung Ihrer Klicks und
+                Suchbegriffe abgelegt, die nur in diesem Browser angezeigt wird. Diese Angaben verlassen Ihr Gerät nicht und
+                lassen sich über die Browsereinstellungen löschen.
+            </p>
+
+            <h2>Ihre Rechte</h2>
+            <p>
+                Sie haben das Recht auf Auskunft, Berichtigung, Löschung,
+                Einschränkung der Verarbeitung, Datenübertragbarkeit und Widerspruch.
+                Wenden Sie sich dafür an <a href="mailto:lvv@vmcv.at">lvv@vmcv.at</a>.
+                Beschwerden können Sie an die österreichische Datenschutzbehörde richten
+                (<a href="https://www.dsb.gv.at" target="_blank" rel="noopener">dsb.gv.at</a>).
+            </p>
+        </section>
+    </div>
+</body>
+</html>

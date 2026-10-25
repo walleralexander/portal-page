@@ -12,3 +12,5 @@
 - [ ] Eingang der Testmeldung (queued 8DD412560A62) im Empfaenger-Postfach bestaetigen
 - [ ] Vor Produktivbetrieb: `no-store` in nginx.conf durch Caching fuer Bilder/Fonts ersetzen
 - [ ] `public/service-worker.js` (Selbstzerstoerer) fruehestens 2027 loeschen, wenn keine alten Registrierungen mehr aktiv
+- [ ] Entscheidung Alex: lokale Klick-/Suchstatistik (`features.analytics_enabled`) abschalten? Umami deckt Statistik ab
+- [ ] ZVR-Zahl des VMCV ins Impressum (optional, falls gewuenscht)

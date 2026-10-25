@@ -596,3 +596,42 @@ html {
         grid-template-columns: 1fr;
     }
 }
+
+/* Footer und Impressum-Seite */
+.site-footer {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--text-light);
+}
+
+.site-footer a,
+.legal a,
+.legal-back a {
+    color: inherit;
+}
+
+.legal-back {
+    margin-bottom: 12px;
+    font-size: 0.9rem;
+}
+
+.legal h1 {
+    font-size: 1.4rem;
+    margin-bottom: 4px;
+}
+
+.legal h2 {
+    font-size: 1rem;
+    margin: 20px 0 6px;
+}
+
+.legal p {
+    line-height: 1.6;
+    max-width: 75ch;
+}
+
+.legal-lead {
+    color: var(--text-light);
+    font-size: 0.9rem;
+}
