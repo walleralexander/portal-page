@@ -1,5 +1,10 @@
 # Status – vmcv-portal
 
+## Recap 2026-10-25 (10)
+- Nutzer sah alte Formular-Version (Rechenaufgabe, "Kontaktadresse fehlt"). Ursache: Service Worker cache-first fuer HTML/JS/CSS.
+- SW jetzt network-first (Cache nur offline), `portal-v10`; beim Update laedt er offene Tabs einmal automatisch neu.
+- nginx: HTML/JS/CSS `expires -1` (no-cache). `add_header` in location vermieden, weil es die Security-Header verwirft (war beim JS/CSS-Fix passiert, jetzt behoben).
+
 ## Recap 2026-10-25 (9)
 - Meldeformular auf serverseitigen Versand umgebaut: `api/report.php` im Container `vmcv-portal-php` (php:8.3-fpm-alpine), nginx `/api/report` -> fastcgi. Versand per SMTP ueber `mailrelay` (Absender lvs@vmcv.at), Reply-To = Melder.
 - Empfaenger nur in `report.env` (gitignored, Vorlage `report.env.example`). `contact_email` aus links.yaml/JS entfernt -> Adresse nicht mehr oeffentlich.

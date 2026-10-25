@@ -1,7 +1,7 @@
 // =============================================================================
 // Portal Page – Service Worker (Phase 3 PWA)
 // =============================================================================
-const CACHE_NAME = 'portal-v9';
+const CACHE_NAME = 'portal-v10';
 const STATIC_ASSETS = [
     '/',
     '/index.html',
@@ -30,55 +30,35 @@ self.addEventListener('install', (event) => {
     self.skipWaiting();
 });
 
-// Activate: clean old caches
+// Activate: clean old caches. War vorher eine alte Version aktiv, offene Tabs
+// einmal neu laden, damit sie nicht mit veraltetem HTML/JS weiterlaufen.
 self.addEventListener('activate', (event) => {
     console.log('[SW] Activate');
-    event.waitUntil(
-        caches.keys().then(keys =>
-            Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
-        )
-    );
-    self.clients.claim();
+    event.waitUntil((async () => {
+        const old = (await caches.keys()).filter(k => k !== CACHE_NAME);
+        await Promise.all(old.map(k => caches.delete(k)));
+        await self.clients.claim();
+        if (old.length) {
+            const tabs = await self.clients.matchAll({ type: 'window' });
+            tabs.forEach(tab => tab.navigate(tab.url));
+        }
+    })());
 });
 
-// Fetch: network-first for YAML/API, cache-first for static
+// Fetch: network-first fuer alles Eigene, Cache nur als Offline-Fallback.
+// (Cache-first hielt Besucher nach jedem Deploy auf alten Dateien fest.)
 self.addEventListener('fetch', (event) => {
     const url = new URL(event.request.url);
 
-    // YAML config & RSS proxy – always network-first
-    if (url.pathname.endsWith('.yaml') || url.hostname === 'api.allorigins.win') {
+    if (event.request.method === 'GET' &&
+        (url.origin === self.location.origin || url.hostname === 'api.allorigins.win')) {
         event.respondWith(networkFirst(event.request));
-        return;
-    }
-
-    // Static assets – cache-first
-    if (event.request.method === 'GET' && url.origin === self.location.origin) {
-        event.respondWith(cacheFirst(event.request));
         return;
     }
 
     // Everything else – network only
     event.respondWith(fetch(event.request));
 });
-
-async function cacheFirst(request) {
-    const cached = await caches.match(request);
-    if (cached) return cached;
-    try {
-        const response = await fetch(request);
-        if (response.ok) {
-            const cache = await caches.open(CACHE_NAME);
-            cache.put(request, response.clone());
-        }
-        return response;
-    } catch {
-        // Offline fallback
-        if (request.mode === 'navigate') {
-            return caches.match('/offline.html');
-        }
-        return new Response('Offline', { status: 503, statusText: 'Offline' });
-    }
-}
 
 async function networkFirst(request) {
     try {
