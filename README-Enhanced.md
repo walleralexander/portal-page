@@ -68,7 +68,6 @@ max_retries: 3
 features:
   search_enabled: true
   keyboard_shortcuts: true
-  analytics_enabled: false
 
 categories:
   - name: "Development"

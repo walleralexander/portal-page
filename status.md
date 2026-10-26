@@ -1,5 +1,11 @@
 # Status – vmcv-portal
 
+## Recap 2026-10-26
+- Lokale Klick-/Suchstatistik komplett entfernt (analytics.js, Admin-Tab „Statistik“, Suchtracking, Flag in links.yaml, totes CSS). app.js loescht Altdaten `portal_analytics` aus den Browsern.
+- Ersatz: Umami zaehlt Link-Klicks zentral (`data-umami-event="Link-Klick"`, Property `link` = Titel). Datenschutz-Text angepasst.
+- Impressum: Verweis auf vmcv.at/impressum entfernt (dort alt/widerspruechlich) -> VMCV-Todos #vmcv-1 Impressum vmcv.at erneuern, #vmcv-2 App-Impressum nicht auf vmcv.at verweisen.
+- Naechster Schritt: in Umami pruefen, ob Events „Link-Klick“ ankommen.
+
 ## Recap 2026-10-25 (14)
 - `public/impressum.html` (Impressum + Datenschutz, Footer-Link auf Startseite). Angaben wie vmcv-app-2026/config/legal.php (VMCV, Bundesstrasse 69a Lauterach, lvv@vmcv.at, Alexander Waller).
 - Rechtsrahmen AT: Pflicht Offenlegung § 25 MedienG (kleine Website: Name + Sitz), § 5 ECG vorsorglich, Datenschutzerklaerung wegen Formular, Server-Logs, Umami. Kein Cookie-Banner noetig (keine Cookies).

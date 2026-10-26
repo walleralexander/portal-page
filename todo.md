@@ -12,5 +12,6 @@
 - [ ] Eingang der Testmeldung (queued 8DD412560A62) im Empfaenger-Postfach bestaetigen
 - [ ] Vor Produktivbetrieb: `no-store` in nginx.conf durch Caching fuer Bilder/Fonts ersetzen
 - [ ] `public/service-worker.js` (Selbstzerstoerer) fruehestens 2027 loeschen, wenn keine alten Registrierungen mehr aktiv
-- [ ] Entscheidung Alex: lokale Klick-/Suchstatistik (`features.analytics_enabled`) abschalten? Umami deckt Statistik ab
+- [x] Lokale Klick-/Suchstatistik entfernt, Umami-Klickzaehlung eingebaut — erledigt 2026-10-26: Alex entschieden, live geprueft (app.js data-umami-event)
 - [ ] ZVR-Zahl des VMCV ins Impressum (optional, falls gewuenscht)
+- [ ] In Umami (umami.server.vmcv.at) pruefen, ob Events „Link-Klick“ ankommen

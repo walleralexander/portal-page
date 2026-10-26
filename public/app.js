@@ -421,7 +421,6 @@ function applyConfigDefaults(config) {
     config.features = config.features || {};
     config.features.search_enabled  = config.features.search_enabled  ?? true;
     config.features.keyboard_shortcuts = config.features.keyboard_shortcuts ?? true;
-    config.features.analytics_enabled = config.features.analytics_enabled ?? false;
 
     // Cache defaults – backward compat with Phase 1 cache_duration field
     if (!config.cache) {
@@ -619,6 +618,9 @@ function createLinkCard(link) {
     a.href = link.url;
     a.target = '_blank';
     a.rel = 'noopener noreferrer';
+    // Umami zaehlt Klicks zentral (ohne Cookies), siehe impressum.html#datenschutz
+    a.dataset.umamiEvent = 'Link-Klick';
+    a.dataset.umamiEventLink = link.title;
 
     const iconSpan = document.createElement('span');
     const iconName = link.icon || 'rss';
@@ -955,8 +957,9 @@ async function init() {
     await loadRSSFeed(config.rss_feed, config.rss_items || 5);
     startAutoRefresh();
 
-    // Phase 3: analytics + admin
-    if (typeof initAnalyticsTracking === 'function') initAnalyticsTracking();
+    // Alte lokale Klick-/Suchstatistik (bis 2026-10-26) aus den Browsern entfernen.
+    try { localStorage.removeItem('portal_analytics'); } catch {}
+
     if (typeof renderAdminButton === 'function') renderAdminButton();
 
     // Phase 4: load plugins

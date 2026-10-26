@@ -24,16 +24,8 @@ function createSearchBar() {
     searchContainer.appendChild(searchInput);
     header.insertBefore(searchContainer, header.firstChild);
 
-    let searchDebounce = null;
     searchInput.addEventListener('input', (e) => {
         filterLinks(e.target.value);
-        // Track search terms (debounced)
-        clearTimeout(searchDebounce);
-        searchDebounce = setTimeout(() => {
-            if (typeof Analytics !== 'undefined' && e.target.value.length >= 2) {
-                Analytics.trackSearch(e.target.value);
-            }
-        }, 800);
     });
 
     // Ctrl+K to focus search

@@ -2,7 +2,7 @@
 // Portal Page – Admin Panel (Phase 3)
 // =============================================================================
 // Open with Ctrl+Shift+A or the ⚙ button in the header.
-// Provides: analytics dashboard, cache management, config viewer, RSS health.
+// Provides: cache management, config viewer, RSS health.
 
 const AdminPanel = {
     _open: false,
@@ -44,8 +44,7 @@ const AdminPanel = {
                 <button class="admin-close" aria-label="Schließen">&times;</button>
             </div>
             <div class="admin-tabs">
-                <button class="admin-tab-btn active" data-tab="analytics">📊 Statistik</button>
-                <button class="admin-tab-btn" data-tab="cache">💾 Cache</button>
+                <button class="admin-tab-btn active" data-tab="cache">💾 Cache</button>
                 <button class="admin-tab-btn" data-tab="rss">📡 RSS Health</button>
                 <button class="admin-tab-btn" data-tab="config">📝 Config</button>
                 ${(this._pluginTabs || []).map(t =>
@@ -53,8 +52,7 @@ const AdminPanel = {
                 ).join('')}
             </div>
             <div class="admin-body">
-                <div class="admin-tab-content" id="admin-tab-analytics"></div>
-                <div class="admin-tab-content hidden" id="admin-tab-cache"></div>
+                <div class="admin-tab-content" id="admin-tab-cache"></div>
                 <div class="admin-tab-content hidden" id="admin-tab-rss"></div>
                 <div class="admin-tab-content hidden" id="admin-tab-config"></div>
                 ${(this._pluginTabs || []).map(t =>
@@ -78,7 +76,6 @@ const AdminPanel = {
         });
 
         // Render first tab
-        this._renderAnalytics();
         this._renderCache();
         this._renderRSSHealth();
         this._renderConfig();
@@ -96,88 +93,6 @@ const AdminPanel = {
         this._el.querySelector(`[data-tab="${tabName}"]`)?.classList.add('active');
         this._el.querySelectorAll('.admin-tab-content').forEach(c => c.classList.add('hidden'));
         this._el.querySelector(`#admin-tab-${tabName}`)?.classList.remove('hidden');
-    },
-
-    // ---- Analytics Tab -------------------------------------------------------
-    _renderAnalytics() {
-        const container = this._el.querySelector('#admin-tab-analytics');
-        if (!Analytics._enabled()) {
-            container.innerHTML = `
-                <div class="admin-empty">
-                    <p>📊 Analytics ist deaktiviert.</p>
-                    <p class="admin-hint">Aktiviere <code>features.analytics_enabled: true</code> in der Konfiguration.</p>
-                </div>`;
-            return;
-        }
-
-        const summary = Analytics.getSummary();
-        const visits = summary.visits;
-
-        // Visit stats
-        let html = `<div class="admin-section">
-            <h3>Besuche</h3>
-            <div class="admin-stat-grid">
-                <div class="admin-stat"><span class="admin-stat-value">${visits.totalVisits}</span><span class="admin-stat-label">Gesamt</span></div>
-                <div class="admin-stat"><span class="admin-stat-value">${visits.totalDays}</span><span class="admin-stat-label">Tage</span></div>
-                <div class="admin-stat"><span class="admin-stat-value">${visits.avgPerDay}</span><span class="admin-stat-label">⌀/Tag</span></div>
-            </div>`;
-
-        // Mini bar chart for last 7 days
-        if (visits.last7.length > 0) {
-            const max = Math.max(...visits.last7.map(v => v.count), 1);
-            html += `<div class="admin-chart">`;
-            visits.last7.forEach(v => {
-                const pct = (v.count / max * 100).toFixed(0);
-                const day = v.date.slice(5); // MM-DD
-                html += `<div class="admin-bar-col" title="${v.date}: ${v.count} Besuche">
-                    <div class="admin-bar" style="height:${pct}%"></div>
-                    <span class="admin-bar-label">${day}</span>
-                </div>`;
-            });
-            html += `</div>`;
-        }
-        html += `</div>`;
-
-        // Top links
-        html += `<div class="admin-section"><h3>Beliebte Links</h3>`;
-        if (summary.top.length === 0) {
-            html += `<p class="admin-hint">Noch keine Klicks erfasst.</p>`;
-        } else {
-            html += `<table class="admin-table"><tr><th>Link</th><th>Kategorie</th><th>Klicks</th></tr>`;
-            summary.top.forEach(l => {
-                html += `<tr><td>${escHTML(l.title)}</td><td>${escHTML(l.category)}</td><td>${l.count}</td></tr>`;
-            });
-            html += `</table>`;
-        }
-        html += `</div>`;
-
-        // Top searches
-        html += `<div class="admin-section"><h3>Häufige Suchen</h3>`;
-        if (summary.searches.length === 0) {
-            html += `<p class="admin-hint">Noch keine Suchen erfasst.</p>`;
-        } else {
-            html += `<div class="admin-tag-list">`;
-            summary.searches.forEach(s => {
-                html += `<span class="admin-tag">${escHTML(s.term)} <small>(${s.count})</small></span>`;
-            });
-            html += `</div>`;
-        }
-        html += `</div>`;
-
-        // Reset button
-        html += `<div class="admin-section">
-            <button class="admin-btn admin-btn-danger" id="admin-reset-analytics">Alle Analytics-Daten löschen</button>
-        </div>`;
-
-        container.innerHTML = html;
-
-        container.querySelector('#admin-reset-analytics')?.addEventListener('click', () => {
-            if (confirm('Alle Analytics-Daten wirklich löschen?')) {
-                Analytics.reset();
-                Toast.show('Analytics-Daten gelöscht', 'info', 2000);
-                this._renderAnalytics();
-            }
-        });
     },
 
     // ---- Cache Tab -----------------------------------------------------------
