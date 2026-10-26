@@ -1,7 +1,7 @@
 # Status – vmcv-portal
 
 ## Recap 2026-10-26 (6)
-- Couleur-Icons nutzen die Farbpalette des Verbindungsverzeichnisses (/workplace/vmcv-alleverbindungen): `tools/farbpalette.js` -> `public/farbpalette.json` (39 Farben, Hex). Alle 33 Couleur-Icons in links.yaml auf `farben.burschen` des Verzeichnisses umgestellt (Zuordnung ueber Website bzw. id). Abweichungen zu vorher u. a. Bregancea (weiss-schwarz-blau-weiss), Sonnenberg (blau), Bernardia (purpurrot), Raeto-Bavaria (hochrot).
+- Couleur-Icons nutzen die Farbpalette des Verbindungsverzeichnisses (/workspace/vmcv-alleverbindungen): `tools/farbpalette.js` -> `public/farbpalette.json` (39 Farben, Hex). Alle 33 Couleur-Icons in links.yaml auf `farben.burschen` des Verzeichnisses umgestellt (Zuordnung ueber Website bzw. id). Abweichungen zu vorher u. a. Bregancea (weiss-schwarz-blau-weiss), Sonnenberg (blau), Bernardia (purpurrot), Raeto-Bavaria (hochrot).
 - Icons mit duennem Rand, damit weisse Streifen sichtbar sind.
 - Verzeichnis NICHT geaendert: babenberg.org ist bis 2027 registriert, nur der Server antwortet nicht (Ausfall, keine Datenkorrektur). Augo Nibelungia fehlt im Verzeichnis. Beides als Todo im Verzeichnis-Repo.
 
@@ -105,7 +105,7 @@
 - Container umbenannt: `vmcv-portal` (Compose-Projekt = Ordnername). Netzwerk-Alias `portal-page` hält NPM-Forward gültig. Altes Image entfernt. portal.vmcv.at → 200.
 
 ## Recap 2026-10-25
-- Projekt von `/stacks/portal-page` nach `/workplace/vmcv-portal` verschoben (Eigenentwicklung).
+- Projekt von `/stacks/portal-page` nach `/workspace/vmcv-portal` verschoben (Eigenentwicklung).
 - `name: portal-page` in docker-compose.yml gesetzt → Container-/Image-Name unverändert.
 - Container neu erstellt, healthy, https://portal.vmcv.at → 200.
 - Nächster Schritt: offene git-Änderungen committen (siehe todo.md).

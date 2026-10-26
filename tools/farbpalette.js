@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 // Erzeugt public/farbpalette.json (Farbname -> Hex) aus dem Verbindungsverzeichnis.
-// Quelle: /workplace/vmcv-alleverbindungen/verbindungen.yaml (farbpalette).
+// Quelle: /workspace/vmcv-alleverbindungen/verbindungen.yaml (farbpalette).
 // Aufruf: node tools/farbpalette.js [pfad/zu/verbindungen.yaml]
 // Neu ausfuehren, wenn im Verzeichnis Farben dazukommen.
 const fs = require('fs');
 const path = require('path');
 const vm = require('vm');
 
-const src = process.argv[2] || '/workplace/vmcv-alleverbindungen/verbindungen.yaml';
+const src = process.argv[2] || path.join(__dirname, '../../vmcv-alleverbindungen/verbindungen.yaml');
 const root = path.join(__dirname, '..');
 
 // js-yaml ist als Browser-Bundle in public/vendor, kein npm noetig

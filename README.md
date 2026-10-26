@@ -72,7 +72,7 @@ The page includes a built-in contact form for reporting wrong or missing entries
 
 ### Couleur Icons
 
-`icon: "couleur-rot-weiss-gold"` draws 2-4 horizontal stripes, top to bottom. Colour names come from the palette of the fraternity directory (`/workplace/vmcv-alleverbindungen/verbindungen.yaml`, key `farbpalette`), exported to `public/farbpalette.json` by `node tools/farbpalette.js`. Rerun it when the directory gets new colours. Unknown names are used as CSS colours. Take the colours of a fraternity from `farben.burschen` in the directory.
+`icon: "couleur-rot-weiss-gold"` draws 2-4 horizontal stripes, top to bottom. Colour names come from the palette of the fraternity directory (`/workspace/vmcv-alleverbindungen/verbindungen.yaml`, key `farbpalette`), exported to `public/farbpalette.json` by `node tools/farbpalette.js`. Rerun it when the directory gets new colours. Unknown names are used as CSS colours. Take the colours of a fraternity from `farben.burschen` in the directory.
 
 ### Link Check (status dot, "Neu", info popup)
 
