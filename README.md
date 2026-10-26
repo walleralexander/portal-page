@@ -74,7 +74,7 @@ The page includes a built-in contact form for reporting wrong or missing entries
 
 The `linkcheck` container runs `api/check-links.php` hourly. It checks every `url:` in `config/links.yaml` and writes `data/status.json` (served as `/status.json`) and `data/state.json` (internal, hashes).
 
-- Red dot on a card: page not reachable (connection error, 404/410, 5xx; 401/403 count as online).
+- Red dot on a card: page not reachable (connection error, 404/410, 5xx; 401/403 count as online), or a short page (under 400 characters of text) that says it is offline/in maintenance despite status 200, e.g. ogv.mkv.at "Service offline".
 - "Neu": the visible text (without scripts, tags and digits) changed and stayed changed for two checks. Shown for 7 days, only after a 7-day learning phase, and not for pages that change more than 3 times a week (rotating content, Facebook).
 - Not monitoring: no alerts.
 

@@ -678,7 +678,7 @@ function openLinkInfo(link) {
         statusEl.textContent = `Online · geprüft ${timeAgo(linkStatus.checked)}`;
     } else {
         statusEl.classList.add('is-down');
-        const code = s.code ? ` (Fehler ${s.code})` : '';
+        const code = s.reason ? ` (${s.reason})` : s.code ? ` (Fehler ${s.code})` : '';
         const since = timeAgo(s.down_since).replace(/^vor /, 'seit ').replace(/^am /, 'seit ').replace('gerade eben', 'seit eben');
         statusEl.textContent = `Nicht erreichbar${code} ${since}`;
     }

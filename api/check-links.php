@@ -58,6 +58,12 @@ function visibleText(string $html): string {
 const NEW_DAYS = 7;
 const MAX_CHANGES_FOR_NEW = 3;
 
+// Wartungs-/Offline-Seiten kommen oft mit Status 200 (ogv.mkv.at: "Service offline").
+// Nur kurze Seiten pruefen, sonst schlaegt jedes "offline" im Fliesstext an.
+// Getestet 2026-10-26 an allen Links: nur ogv.mkv.at trifft.
+const SOFT_DOWN_MAX_LEN = 400;
+const SOFT_DOWN = '/offline|wartungsarbeiten|wartungsmodus|in wartung|maintenance|vor(ü|ue)bergehend nicht (verf(ü|ue)gbar|erreichbar)|temporarily unavailable|account (has been )?suspended|domain.{0,30}(zu verkaufen|for sale)/iu';
+
 $now = time();
 $state = [];
 $public = [];
@@ -69,10 +75,15 @@ foreach ($urls as $url) {
     [$code, $body] = fetchPage($url);
     // 401/403: Seite ist da, nur geschuetzt.
     $ok = $code !== null && ($code < 400 || $code === 401 || $code === 403);
+    $reason = null;
+    $text = $ok ? visibleText($body) : '';
+    if ($ok && mb_strlen($text) < SOFT_DOWN_MAX_LEN && preg_match(SOFT_DOWN, $text, $mm)) {
+        $ok = false;
+        $reason = "Seite meldet „{$mm[0]}“";
+    }
 
     if ($ok) {
         unset($s['down_since']);
-        $text = visibleText($body);
         if ($text !== '') {
             $h = hash('sha256', $text);
             if (!isset($s['hash'])) {
@@ -102,6 +113,7 @@ foreach ($urls as $url) {
     $public[$url] = [
         'ok' => $ok,
         'code' => $code,
+        'reason' => $reason,
         'down_since' => isset($s['down_since']) ? date('c', $s['down_since']) : null,
         'changed' => $isNew ? date('c', end($recent)) : null,
     ];

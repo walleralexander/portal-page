@@ -1,5 +1,9 @@
 # Status – vmcv-portal
 
+## Recap 2026-10-26 (4)
+- Siegbergball-Link entfernt. SLV (WordPress-Fehler) und STMV (kein DNS) bleiben mit rotem Punkt (Entscheidung EB Ericsson); mkv.at/organisation verlinkt beide auch nicht. A.V. Austria: Zertifikat abgelaufen, Verbindung informiert.
+- Linkcheck erkennt „weiche“ Ausfaelle: Status 200, aber kurze Seite (<400 Zeichen) mit offline/Wartung/maintenance/... -> rot mit Grund im Popup („Seite meldet ‚offline‘“). Anlass ogv.mkv.at. An allen 55 Links getestet: kein Fehlalarm.
+
 ## Recap 2026-10-26 (3)
 - Info-Popup je Link-Kachel (ⓘ, PC beim Darueberfahren, Handy immer sichtbar; native <dialog>): Adresse, Status, „Neu“, Button „Problem mit diesem Link melden“ -> `melden.html?link=&url=` (vorausgefuellt).
 - Meldeformular auf eigene Seite `melden.html` + `report.js` ausgelagert. Header-Link dorthin; am Handy (<480px) Header-Link ausgeblendet (Header zu breit), dafuer im Footer.
