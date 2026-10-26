@@ -1,5 +1,10 @@
 # Status – vmcv-portal
 
+## Recap 2026-10-26 (2)
+- EB Ericsson bestaetigt: Meldeformular-Mail kommt an, Umami-Events „Link-Klick“ kommen an.
+- ZVR-Zahl 069488907 im Impressum ergaenzt.
+- Offen: NPM-Forward auf vmcv-portal umstellen, Push, vor Produktion Caching fuer Bilder.
+
 ## Recap 2026-10-26
 - Lokale Klick-/Suchstatistik komplett entfernt (analytics.js, Admin-Tab „Statistik“, Suchtracking, Flag in links.yaml, totes CSS). app.js loescht Altdaten `portal_analytics` aus den Browsern.
 - Ersatz: Umami zaehlt Link-Klicks zentral (`data-umami-event="Link-Klick"`, Property `link` = Titel). Datenschutz-Text angepasst.
