@@ -1,5 +1,11 @@
 # Status – vmcv-portal
 
+## Recap 2026-10-26 (5)
+- Neue Kategorie „Hochschulverbindungen Innsbruck“: die 6 ÖCV-Verbindungen, die der ICV verlinkt (Alpinia, Austria, Leopoldina, Raeto-Bavaria, Rheno-Danubia, Vindelicia). „Hochschulverbindungen“ neu: Alpenland Wien, Carolina Graz, Kürnberg Wien, Lodronia Salzburg, Rugia Wien. Daten aus Artefakt „Verbindungen nach Verbänden“, Websites geprueft.
+- Couleur-Icons koennen jetzt 2-4 Streifen (Lodronia silber-blau, Rheno-Danubia weiss-gold-blau-weiss).
+- Offen: Babenberg (Graz oder Wien?), Leopoldina-Farben (Portal rot-gruen-gold vs. Artefakt blau-gruen-gold).
+- Linkcheck fand 13:51 echten Ausfall: www.vmcv.at „500 Internal Server Error“ (Hosting meinweb, 162.55.244.162).
+
 ## Recap 2026-10-26 (4)
 - Siegbergball-Link entfernt. SLV (WordPress-Fehler) und STMV (kein DNS) bleiben mit rotem Punkt (Entscheidung EB Ericsson); mkv.at/organisation verlinkt beide auch nicht. A.V. Austria: Zertifikat abgelaufen, Verbindung informiert.
 - Linkcheck erkennt „weiche“ Ausfaelle: Status 200, aber kurze Seite (<400 Zeichen) mit offline/Wartung/maintenance/... -> rot mit Grund im Popup („Seite meldet ‚offline‘“). Anlass ogv.mkv.at. An allen 55 Links getestet: kein Fehlalarm.
