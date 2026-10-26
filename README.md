@@ -68,6 +68,15 @@ The page includes a built-in contact form for reporting wrong or missing entries
 - Copy `report.env.example` to `report.env` and set `REPORT_TO` (recipient). `report.env` is gitignored, the address never reaches the browser.
 - The form posts to `/api/report` (`api/report.php`, PHP-FPM container), which sends via the `mailrelay` SMTP container.
 - Server-side bot protection: honeypot field, minimum fill time, 3 reports per IP per 10 minutes.
+- The form lives on `melden.html`; the info popup (ⓘ on each link card) links there with the link prefilled.
+
+### Link Check (status dot, "Neu", info popup)
+
+The `linkcheck` container runs `api/check-links.php` hourly. It checks every `url:` in `config/links.yaml` and writes `data/status.json` (served as `/status.json`) and `data/state.json` (internal, hashes).
+
+- Red dot on a card: page not reachable (connection error, 404/410, 5xx; 401/403 count as online).
+- "Neu": the visible text (without scripts, tags and digits) changed and stayed changed for two checks. Shown for 7 days, only after a 7-day learning phase, and not for pages that change more than 3 times a week (rotating content, Facebook).
+- Not monitoring: no alerts.
 
 ## Available Icons
 

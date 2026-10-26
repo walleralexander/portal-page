@@ -4,6 +4,9 @@ config/links.yaml
 # Empfaenger des Meldeformulars (nicht oeffentlich)
 report.env
 
+# Linkcheck-Ergebnisse (status.json, state.json)
+data/
+
 # Editor-Sicherungen und Backups des Config-Editors
 *~
 config/.backups/

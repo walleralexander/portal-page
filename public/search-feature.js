@@ -51,7 +51,8 @@ function filterLinks(searchTerm) {
             const title = titleEl.textContent.toLowerCase();
             const href  = (link.href || '').toLowerCase();
             const isVisible = term === '' || title.includes(term) || href.includes(term);
-            link.style.display = isVisible ? 'flex' : 'none';
+            // Kacheln mit Info-Button stecken in .link-wrap, sonst bliebe eine leere Gitterzelle.
+            (link.closest('.link-wrap') || link).style.display = isVisible ? '' : 'none';
             if (isVisible) hasVisibleLinks = true;
         });
 
@@ -60,7 +61,7 @@ function filterLinks(searchTerm) {
 
     // Screen-reader announcement
     if (typeof announce === 'function' && term) {
-        const visible = document.querySelectorAll('.link-card[style*="flex"], .link-card:not([style])').length;
+        const visible = [...document.querySelectorAll('.link-card')].filter(l => (l.closest('.link-wrap') || l).style.display !== 'none').length;
         announce(`${visible} Ergebnisse für "${searchTerm}"`);
     }
 }

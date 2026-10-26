@@ -15,3 +15,5 @@
 - [x] Lokale Klick-/Suchstatistik entfernt, Umami-Klickzaehlung eingebaut — erledigt 2026-10-26: Alex entschieden, live geprueft (app.js data-umami-event)
 - [x] ZVR-Zahl des VMCV ins Impressum — erledigt 2026-10-26: 069488907 eingetragen, live geprueft
 - [x] In Umami pruefen, ob Events „Link-Klick“ ankommen — erledigt 2026-10-26: EB Ericsson bestaetigt
+- [ ] Ab 2026-11-02 (Ende Lernphase): pruefen, ob „Neu“ sinnvoll anschlaegt (data/state.json: changes je Link)
+- [ ] Kaputte Links in links.yaml klaeren: siegbergball-2026.lovable.app (404), slv-mkv.at (500), stmv.at (DNS weg), av-austria.at

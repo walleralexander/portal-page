@@ -1,5 +1,16 @@
 # Status – vmcv-portal
 
+## Recap 2026-10-26 (3)
+- Info-Popup je Link-Kachel (ⓘ, PC beim Darueberfahren, Handy immer sichtbar; native <dialog>): Adresse, Status, „Neu“, Button „Problem mit diesem Link melden“ -> `melden.html?link=&url=` (vorausgefuellt).
+- Meldeformular auf eigene Seite `melden.html` + `report.js` ausgelagert. Header-Link dorthin; am Handy (<480px) Header-Link ausgeblendet (Header zu breit), dafuer im Footer.
+- Linkcheck: Container `vmcv-portal-linkcheck` (php-fpm-Image, Schleife stuendlich) -> `data/status.json`. Roter Punkt bei nicht erreichbar. „Neu“ ueber Hash des sichtbaren Texts ohne Ziffern, Bestaetigung ueber 2 Laeufe, Lernphase 7 Tage, unterdrueckt bei >3 Aenderungen/Woche.
+- Messungen: Roh-Hash 29/52 Fehlalarme, Last-Modified unbrauchbar, Text-Hash 0/52 sofort; nach 20 Min. 5/53 Rauschen (Facebook x3, bregancea Bildunterschrift, cloud.vmcv.at) -> Lernphase + Wechsel-Erkennung.
+- Stolpersteine: Container ohne IPv6 (bindto 0.0.0.0), Host-DNS loest server.vmcv.at auf 127.0.1.1 (Container nutzt 1.1.1.1/9.9.9.9).
+- Derzeit nicht erreichbar: siegbergball-2026.lovable.app (404), slv-mkv.at (500), stmv.at (DNS weg), av-austria.at (Verbindung scheitert).
+- Fixes nebenbei: Handy-Ueberbreite (lange Woerter in Kacheln), lang="de" + Silbentrennung.
+- Getestet mit Headless-Chrome (Playwright): PC + Handy, Popup, Vorbefuellung, Suche, „Neu“ (mit vorgespieltem status.json), keine JS-Fehler.
+- Naechster Schritt: ab 2026-11-02 pruefen, ob „Neu“ sinnvoll anschlaegt.
+
 ## Recap 2026-10-26 (2)
 - EB Ericsson bestaetigt: Meldeformular-Mail kommt an, Umami-Events „Link-Klick“ kommen an.
 - ZVR-Zahl 069488907 im Impressum ergaenzt.

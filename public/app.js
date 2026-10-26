@@ -441,62 +441,6 @@ function applyConfigDefaults(config) {
     return config;
 }
 
-// ---- Contact / Report Form -------------------------------------------------
-// Versand serverseitig ueber api/report.php; Empfaenger und Bot-Pruefung dort.
-function setReportStatus(message, type = '') {
-    const statusEl = document.getElementById('report-status');
-    if (!statusEl) return;
-    statusEl.textContent = message;
-    statusEl.classList.remove('ok', 'error');
-    if (type) statusEl.classList.add(type);
-}
-
-function resetReportStartedAt() {
-    const startedAt = document.getElementById('report-started-at');
-    if (startedAt) startedAt.value = String(Date.now());
-}
-
-function initReportForm() {
-    const form = document.getElementById('entry-report-form');
-    if (!form || form.dataset.initialized === 'true') return;
-    form.dataset.initialized = 'true';
-    resetReportStartedAt();
-
-    form.addEventListener('submit', async (event) => {
-        event.preventDefault();
-
-        const details = (document.getElementById('report-details')?.value || '').trim();
-        if (details.length < 10) {
-            setReportStatus('Bitte eine genauere Beschreibung eingeben (mindestens 10 Zeichen).', 'error');
-            return;
-        }
-
-        const submitBtn = document.getElementById('report-submit');
-        if (submitBtn) submitBtn.disabled = true;
-        setReportStatus('Wird gesendet …');
-
-        try {
-            const response = await fetch('/api/report', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(Object.fromEntries(new FormData(form)))
-            });
-            const result = await response.json().catch(() => ({}));
-            if (!response.ok) throw new Error(result.message || 'Senden fehlgeschlagen. Bitte spaeter erneut versuchen.');
-
-            setReportStatus(result.message || 'Danke fuer die Meldung.', 'ok');
-            Toast.show('Meldung verschickt', 'success', 2500);
-            form.reset();
-            resetReportStartedAt();
-        } catch (error) {
-            // Eingaben bleiben stehen, damit nichts verloren geht.
-            setReportStatus(error.message, 'error');
-        } finally {
-            if (submitBtn) submitBtn.disabled = false;
-        }
-    });
-}
-
 // ---- RSS Fetching with retry + rate-limit -----------------------------------
 async function fetchWithRetry(url, opts = {}, retries) {
     retries = retries ?? (globalConfig?.max_retries || 3);
@@ -653,7 +597,108 @@ function createLinkCard(link) {
 
     a.appendChild(iconSpan);
     a.appendChild(titleSpan);
-    return a;
+
+    // RSS-Eintraege sind kurzlebig: kein Info-Button, kein Status.
+    if (link.pubDate) return a;
+
+    // Info-Button neben (nicht in) dem Link: Button in <a> waere ungueltiges HTML.
+    const wrap = document.createElement('div');
+    wrap.className = 'link-wrap';
+    wrap.dataset.url = link.url;
+    const info = document.createElement('button');
+    info.type = 'button';
+    info.className = 'link-info-btn';
+    info.textContent = 'i';
+    info.setAttribute('aria-label', `Infos zu ${link.title}`);
+    info.addEventListener('click', () => openLinkInfo(link));
+    wrap.append(a, info);
+    return wrap;
+}
+
+// ---- Linkstatus (status.json vom stuendlichen Linkcheck) --------------------
+let linkStatus = null;
+const NEW_DAYS = 7;
+
+async function loadLinkStatus() {
+    try {
+        const response = await fetch('/status.json');
+        if (!response.ok) return;
+        linkStatus = await response.json();
+    } catch { return; }
+    document.querySelectorAll('.link-wrap').forEach(wrap => {
+        const s = linkStatus.links?.[wrap.dataset.url];
+        const card = wrap.querySelector('.link-card');
+        card.querySelectorAll('.link-down, .link-new').forEach(el => el.remove());
+        if (!s) return;
+        if (!s.ok) {
+            const dot = document.createElement('span');
+            dot.className = 'link-down';
+            dot.title = 'Seite derzeit nicht erreichbar';
+            dot.innerHTML = '<span class="sr-only">nicht erreichbar</span>';
+            card.prepend(dot);
+        } else if (isRecent(s.changed)) {
+            const badge = document.createElement('span');
+            badge.className = 'link-new';
+            badge.textContent = 'Neu';
+            badge.title = 'Inhalt in den letzten 7 Tagen geändert';
+            card.querySelector('.link-title').appendChild(badge);
+        }
+    });
+}
+
+function isRecent(iso) {
+    return !!iso && Date.now() - new Date(iso).getTime() < NEW_DAYS * 86400000;
+}
+
+function timeAgo(iso) {
+    const min = Math.round((Date.now() - new Date(iso).getTime()) / 60000);
+    if (min < 1) return 'gerade eben';
+    if (min < 60) return `vor ${min} Min.`;
+    const h = Math.round(min / 60);
+    if (h < 24) return `vor ${h} Std.`;
+    return `am ${new Date(iso).toLocaleDateString('de-DE')}`;
+}
+
+function openLinkInfo(link) {
+    const dialog = document.getElementById('link-info');
+    if (!dialog) return;
+    const s = linkStatus?.links?.[link.url];
+
+    dialog.querySelector('#link-info-title').textContent = link.title;
+    const urlEl = dialog.querySelector('#link-info-url');
+    urlEl.href = link.url;
+    urlEl.textContent = link.url.replace(/^https?:\/\//, '').replace(/\/$/, '');
+
+    const statusEl = dialog.querySelector('#link-info-status');
+    statusEl.className = 'link-info-status';
+    if (!s) {
+        statusEl.textContent = 'Status noch nicht geprüft.';
+    } else if (s.ok) {
+        statusEl.classList.add('is-ok');
+        statusEl.textContent = `Online · geprüft ${timeAgo(linkStatus.checked)}`;
+    } else {
+        statusEl.classList.add('is-down');
+        const code = s.code ? ` (Fehler ${s.code})` : '';
+        const since = timeAgo(s.down_since).replace(/^vor /, 'seit ').replace(/^am /, 'seit ').replace('gerade eben', 'seit eben');
+        statusEl.textContent = `Nicht erreichbar${code} ${since}`;
+    }
+
+    const changedEl = dialog.querySelector('#link-info-changed');
+    changedEl.textContent = s?.ok && isRecent(s.changed)
+        ? `Neu: Inhalt ${timeAgo(s.changed)} geändert`
+        : '';
+
+    dialog.querySelector('#link-info-report').href =
+        `melden.html?link=${encodeURIComponent(link.title)}&url=${encodeURIComponent(link.url)}`;
+    dialog.showModal();
+}
+
+function initLinkInfoDialog() {
+    const dialog = document.getElementById('link-info');
+    if (!dialog) return;
+    dialog.querySelector('.link-info-close').addEventListener('click', () => dialog.close());
+    // Klick auf den abgedunkelten Hintergrund schliesst
+    dialog.addEventListener('click', (e) => { if (e.target === dialog) dialog.close(); });
 }
 
 // ---- Lazy-load RSS Categories with IntersectionObserver ---------------------
@@ -879,9 +924,9 @@ async function hotReloadConfig() {
     }
 
     applySiteConfig(config);
-    initReportForm();
     renderMessage(config.message);
     await renderLinks(config.categories);
+    loadLinkStatus();
     await loadRSSFeed(config.rss_feed, config.rss_items || 5);
     renderDevBadge();
     startAutoRefresh();
@@ -950,10 +995,11 @@ async function init() {
     }
 
     applySiteConfig(config);
-    initReportForm();
     renderMessage(config.message);
+    initLinkInfoDialog();
     renderDevBadge();
     await renderLinks(config.categories);
+    loadLinkStatus();
     await loadRSSFeed(config.rss_feed, config.rss_items || 5);
     startAutoRefresh();
 

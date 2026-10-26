@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -27,7 +27,7 @@
             </div>
             <div class="header-right">
                 <div class="datetime" id="datetime"></div>
-                <a class="report-link" href="#report-title">Eintrag melden</a>
+                <a class="report-link" href="melden.html">Eintrag melden</a>
                 <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">
                 <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
@@ -59,47 +59,20 @@
             </div>
         </div>
 
-        <section class="report-section" aria-labelledby="report-title">
-            <h2 id="report-title" class="report-title">Fehlenden oder falschen Eintrag melden</h2>
-            <p class="report-description">Wenn ein Link fehlt oder nicht stimmt, kannst du hier eine kurze Meldung senden.</p>
-            <form id="entry-report-form" class="report-form" novalidate>
-                <div class="report-grid">
-                    <div class="report-field">
-                        <label for="report-type">Art der Meldung</label>
-                        <select id="report-type" name="type" required>
-                            <option value="falsch">Eintrag ist falsch</option>
-                            <option value="fehlt">Eintrag fehlt</option>
-                            <option value="anderes">Anderes Problem</option>
-                        </select>
-                    </div>
-                    <div class="report-field">
-                        <label for="report-url">Betroffener Link (optional)</label>
-                        <input id="report-url" name="url" type="url" maxlength="500" placeholder="https://beispiel.at" autocomplete="url">
-                    </div>
-                </div>
-
-                <div class="report-field">
-                    <label for="report-details">Beschreibung</label>
-                    <textarea id="report-details" name="details" rows="5" minlength="10" maxlength="1500" required placeholder="Was ist falsch oder welcher Eintrag fehlt?"></textarea>
-                </div>
-
-                <div class="report-field">
-                    <label for="report-email">Deine E-Mail (optional, fuer Rueckfragen)</label>
-                    <input id="report-email" name="email" type="email" maxlength="200" placeholder="name@beispiel.at" autocomplete="email">
-                </div>
-
-                <input id="report-honeypot" class="report-honeypot" type="text" name="website" autocomplete="off" tabindex="-1" aria-hidden="true">
-                <input id="report-started-at" type="hidden" name="started_at" value="">
-
-                <div class="report-actions">
-                    <button type="submit" id="report-submit" class="report-submit-btn">Meldung senden</button>
-                </div>
-                <p id="report-status" class="report-status" aria-live="polite"></p>
-            </form>
-        </section>
+        <!-- Info-Popup zu einer Link-Kachel, befuellt von app.js (openLinkInfo) -->
+        <dialog id="link-info" class="link-info-dialog" aria-labelledby="link-info-title">
+            <h2 id="link-info-title" class="link-info-title"></h2>
+            <a id="link-info-url" class="link-info-url" target="_blank" rel="noopener noreferrer"></a>
+            <p id="link-info-status" class="link-info-status"></p>
+            <p id="link-info-changed" class="link-info-changed"></p>
+            <div class="link-info-actions">
+                <a id="link-info-report" class="report-submit-btn" href="melden.html">Problem mit diesem Link melden</a>
+                <button type="button" class="link-info-close">Schließen</button>
+            </div>
+        </dialog>
 
         <footer class="site-footer">
-            <a href="impressum.html">Impressum</a> · <a href="impressum.html#datenschutz">Datenschutz</a>
+            <a href="melden.html">Eintrag melden</a> · <a href="impressum.html">Impressum</a> · <a href="impressum.html#datenschutz">Datenschutz</a>
         </footer>
     </div>
 
