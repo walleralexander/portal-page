@@ -3,7 +3,9 @@
 ## Recap 2026-10-26 (2)
 - EB Ericsson bestaetigt: Meldeformular-Mail kommt an, Umami-Events „Link-Klick“ kommen an.
 - ZVR-Zahl 069488907 im Impressum ergaenzt.
-- Offen: NPM-Forward auf vmcv-portal umstellen, Push, vor Produktion Caching fuer Bilder.
+- NPM proxy_host 6 (portal.vmcv.at, portal.server.vmcv.at) zeigt jetzt auf `vmcv-portal:80`, Alias `portal-page` entfernt. Backup `/stacks/npm/data/database.sqlite.bak-20261026-123633`.
+- Nach GitHub gepusht.
+- Offen: Caching fuer Bilder vor Produktivbetrieb (todo). Naechste Aenderungen folgen.
 
 ## Recap 2026-10-26
 - Lokale Klick-/Suchstatistik komplett entfernt (analytics.js, Admin-Tab „Statistik“, Suchtracking, Flag in links.yaml, totes CSS). app.js loescht Altdaten `portal_analytics` aus den Browsern.

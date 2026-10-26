@@ -2,7 +2,7 @@ services:
   portal:
     image: nginx:alpine
     container_name: vmcv-portal
-    # Kein Port-Publish: NPM erreicht portal-page:80 ueber dockernet (Host-Port 80 gehoert NPM). 2026-10-05
+    # Kein Port-Publish: NPM erreicht vmcv-portal:80 ueber dockernet (Host-Port 80 gehoert NPM).
     volumes:
       # Website direkt gemountet: Aenderungen in public/ greifen sofort, kein Rebuild.
       - ./public:/usr/share/nginx/html:ro
@@ -22,10 +22,7 @@ services:
       timeout: 5s
       retries: 3
       start_period: 40s
-    networks:
-      dockernet:
-        # ponytail: alias haelt NPM-Forward portal-page:80 gueltig. Weg, wenn NPM auf vmcv-portal umgestellt.
-        aliases: [portal-page]
+    networks: [dockernet]
   php:
     image: php:8.3-fpm-alpine
     container_name: vmcv-portal-php
