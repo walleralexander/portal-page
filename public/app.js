@@ -687,13 +687,20 @@ function openLinkInfo(link) {
         statusEl.textContent = 'Status noch nicht geprüft.';
     } else if (s.ok) {
         statusEl.classList.add('is-ok');
-        statusEl.textContent = `Online · geprüft ${timeAgo(linkStatus.checked)}`;
+        statusEl.textContent = 'Online';
     } else {
         statusEl.classList.add('is-down');
         const code = s.reason ? ` (${s.reason})` : s.code ? ` (Fehler ${s.code})` : '';
         const since = timeAgo(s.down_since).replace(/^vor /, 'seit ').replace(/^am /, 'seit ').replace('gerade eben', 'seit eben');
         statusEl.textContent = `Nicht erreichbar${code} ${since}`;
     }
+
+    // Linkcheck laeuft stuendlich (docker-compose.yml), naechster Lauf daher ca. eine Stunde nach dem letzten.
+    const checked = linkStatus?.checked ? new Date(linkStatus.checked) : null;
+    const hhmm = d => d.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+    dialog.querySelector('#link-info-checked').textContent = checked
+        ? `Letzter Test: ${hhmm(checked)} · Nächster Test: ca. ${hhmm(new Date(checked.getTime() + 3600000))}`
+        : '';
 
     const changedEl = dialog.querySelector('#link-info-changed');
     changedEl.textContent = s?.ok && isRecent(s.changed)
