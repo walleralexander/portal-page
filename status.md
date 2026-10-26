@@ -1,5 +1,10 @@
 # Status – vmcv-portal
 
+## Recap 2026-10-26 (6)
+- Couleur-Icons nutzen die Farbpalette des Verbindungsverzeichnisses (/workplace/vmcv-alleverbindungen): `tools/farbpalette.js` -> `public/farbpalette.json` (39 Farben, Hex). Alle 33 Couleur-Icons in links.yaml auf `farben.burschen` des Verzeichnisses umgestellt (Zuordnung ueber Website bzw. id). Abweichungen zu vorher u. a. Bregancea (weiss-schwarz-blau-weiss), Sonnenberg (blau), Bernardia (purpurrot), Raeto-Bavaria (hochrot).
+- Icons mit duennem Rand, damit weisse Streifen sichtbar sind.
+- Verzeichnis NICHT geaendert: babenberg.org ist bis 2027 registriert, nur der Server antwortet nicht (Ausfall, keine Datenkorrektur). Augo Nibelungia fehlt im Verzeichnis. Beides als Todo im Verzeichnis-Repo.
+
 ## Recap 2026-10-26 (5)
 - Neue Kategorie „Hochschulverbindungen Innsbruck“: die 6 ÖCV-Verbindungen, die der ICV verlinkt (Alpinia, Austria, Leopoldina, Raeto-Bavaria, Rheno-Danubia, Vindelicia). „Hochschulverbindungen“ neu: Alpenland Wien, Carolina Graz, Kürnberg Wien, Lodronia Salzburg, Rugia Wien. Daten aus Artefakt „Verbindungen nach Verbänden“, Websites geprueft.
 - Couleur-Icons koennen jetzt 2-4 Streifen (Lodronia silber-blau, Rheno-Danubia weiss-gold-blau-weiss).
