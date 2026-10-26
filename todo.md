@@ -16,4 +16,6 @@
 - [x] ZVR-Zahl des VMCV ins Impressum — erledigt 2026-10-26: 069488907 eingetragen, live geprueft
 - [x] In Umami pruefen, ob Events „Link-Klick“ ankommen — erledigt 2026-10-26: EB Ericsson bestaetigt
 - [ ] Ab 2026-11-02 (Ende Lernphase): pruefen, ob „Neu“ sinnvoll anschlaegt (data/state.json: changes je Link)
-- [ ] Kaputte Links in links.yaml klaeren: siegbergball-2026.lovable.app (404), slv-mkv.at (500), stmv.at (DNS weg), av-austria.at
+- [x] Siegbergball-Link entfernt — erledigt 2026-10-26: aus config/links.yaml geloescht, Linkcheck 55 Links
+- [ ] Entscheidung EB Ericsson: SLV (slv-mkv.at WordPress-Fehler 500) und STMV (stmv.at ohne DNS-Eintrag) - mkv.at/organisation verlinkt beide nicht. Entfernen oder auf mkv.at/organisation zeigen?
+- [ ] A.V. Austria Innsbruck: TLS-Zertifikat av-austria.at seit 2026-10-19 abgelaufen (Betreiber muss erneuern), Link bleibt
