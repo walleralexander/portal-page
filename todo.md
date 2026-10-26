@@ -19,6 +19,6 @@
 - [x] Siegbergball-Link entfernt — erledigt 2026-10-26: aus config/links.yaml geloescht, Linkcheck 55 Links
 - [x] Entscheidung SLV/STMV — erledigt 2026-10-26: EB Ericsson: Links bleiben, roter Punkt zeigt den Zustand
 - [x] A.V. Austria Innsbruck ueber abgelaufenes TLS-Zertifikat informieren — erledigt 2026-10-26: EB Ericsson hat informiert; roter Punkt verschwindet nach Erneuerung von selbst
-- [ ] Babenberg in „Hochschulverbindungen“ eintragen: Graz (K.Ö.St.V., babenberg-graz.at) oder Wien (K.H.V., babenberg.org nicht erreichbar)? Entscheidung EB Ericsson
-- [ ] Leopoldina-Couleur klaeren: Portal rot-gruen-gold, Artefakt blau-gruen-gold
+- [x] Babenberg in „Hochschulverbindungen“ eintragen — erledigt 2026-10-26: K.H.V. Babenberg Wien, Link auf oecv.at/Verband/BabenbergWien (babenberg.org tot)
+- [x] Leopoldina-Couleur klaeren — erledigt 2026-10-26: EB Ericsson: blau-gruen-gold, Icon geaendert
 - [ ] www.vmcv.at liefert seit 2026-10-26 13:51 „500 Internal Server Error“ (meinweb-Hosting) - pruefen
