@@ -21,4 +21,4 @@
 - [x] A.V. Austria Innsbruck ueber abgelaufenes TLS-Zertifikat informieren — erledigt 2026-10-26: EB Ericsson hat informiert; roter Punkt verschwindet nach Erneuerung von selbst
 - [x] Babenberg in „Hochschulverbindungen“ eintragen — erledigt 2026-10-26: K.H.V. Babenberg Wien, Link auf oecv.at/Verband/BabenbergWien (babenberg.org tot)
 - [x] Leopoldina-Couleur klaeren — erledigt 2026-10-26: EB Ericsson: blau-gruen-gold, Icon geaendert
-- [ ] www.vmcv.at liefert seit 2026-10-26 13:51 „500 Internal Server Error“ (meinweb-Hosting) - pruefen
+- [x] www.vmcv.at liefert seit 2026-10-26 13:51 „500 Internal Server Error“ (meinweb-Hosting) - pruefen — erledigt 2026-10-28: Linkcheck 00:49 Status 200, wieder online
