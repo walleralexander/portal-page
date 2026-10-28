@@ -62,6 +62,10 @@ const MAX_CHANGES_FOR_NEW = 3;
 // Nur kurze Seiten pruefen, sonst schlaegt jedes "offline" im Fliesstext an.
 // Getestet 2026-10-26 an allen Links: nur ogv.mkv.at trifft.
 const SOFT_DOWN_MAX_LEN = 400;
+
+// Erst nach so vielen Fehlschlaegen in Folge als offline zeigen: einzelne Aussetzer (Timeout,
+// kurzer 5xx) gaben sonst fuer eine Stunde einen roten Punkt (ekv.info, 2026-10-28 13:01).
+const DOWN_AFTER = 2;
 const SOFT_DOWN = '/offline|wartungsarbeiten|wartungsmodus|in wartung|maintenance|vor(ü|ue)bergehend nicht (verf(ü|ue)gbar|erreichbar)|temporarily unavailable|account (has been )?suspended|domain.{0,30}(zu verkaufen|for sale)/iu';
 
 $now = time();
@@ -83,7 +87,7 @@ foreach ($urls as $url) {
     }
 
     if ($ok) {
-        unset($s['down_since']);
+        unset($s['down_since'], $s['fails']);
         if ($text !== '') {
             $h = hash('sha256', $text);
             if (!isset($s['hash'])) {
@@ -99,9 +103,12 @@ foreach ($urls as $url) {
             }
         }
     } else {
+        // Altbestand ohne Zaehler, aber schon down: gilt als bestaetigt.
+        $s['fails'] = ($s['fails'] ?? (isset($s['down_since']) ? DOWN_AFTER - 1 : 0)) + 1;
         $s['down_since'] ??= $now;
-        $down++;
+        if ($s['fails'] >= DOWN_AFTER) $down++;
     }
+    $shownOk = $ok || $s['fails'] < DOWN_AFTER;
     $s['code'] = $code;
     $s['changes'] = array_values(array_filter($s['changes'] ?? [], fn($t) => $t > $now - NEW_DAYS * 86400));
     $state[$url] = $s;
@@ -111,10 +118,10 @@ foreach ($urls as $url) {
     $isNew = $learned && $recent && count($recent) <= MAX_CHANGES_FOR_NEW;
     if ($isNew) $changed++;
     $public[$url] = [
-        'ok' => $ok,
+        'ok' => $shownOk,
         'code' => $code,
-        'reason' => $reason,
-        'down_since' => isset($s['down_since']) ? date('c', $s['down_since']) : null,
+        'reason' => $shownOk ? null : $reason,
+        'down_since' => !$shownOk ? date('c', $s['down_since']) : null,
         'changed' => $isNew ? date('c', end($recent)) : null,
     ];
 }
