@@ -288,6 +288,7 @@ html {
     flex-direction: column;
     gap: 2px;
     overflow: hidden;
+    white-space: pre-line;   /* Zeilenumbruch \n im Titel (links.yaml) */
 }
 
 .link-date {

@@ -1,0 +1,13 @@
+{
+  "manifest_version": 3,
+  "name": "VMCV Instagram-Logos",
+  "version": "1.0",
+  "description": "Holt die Profilbilder aller Instagram-Links von portal.vmcv.at in Downloads/ig-logos/.",
+  "permissions": ["downloads", "tabs", "scripting"],
+  "host_permissions": [
+    "https://portal.vmcv.at/*",
+    "https://www.instagram.com/*"
+  ],
+  "background": { "service_worker": "background.js" },
+  "action": { "default_title": "Instagram-Logos holen" }
+}

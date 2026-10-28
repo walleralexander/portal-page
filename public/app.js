@@ -582,10 +582,11 @@ function createLinkCard(link) {
     const iconName = link.icon || 'rss';
 
     // Handle special "logo" icon - use site logo image
-    if (iconName === 'logo' && siteLogoUrl) {
+    // "logo" = Site-Logo, "img/..." = eigenes Bild aus public/img/
+    if ((iconName === 'logo' && siteLogoUrl) || iconName.startsWith('img/')) {
         iconSpan.className = 'link-icon logo-icon';
         const img = document.createElement('img');
-        img.src = siteLogoUrl;
+        img.src = iconName === 'logo' ? siteLogoUrl : iconName;
         img.alt = 'Logo';
         iconSpan.appendChild(img);
     } else {
